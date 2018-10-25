@@ -4,6 +4,7 @@
 describe('--unit tests', () => {
   require('./unit-tests/getChildAge');
   require('./unit-tests/getCostPerDay');
+  require('./unit-tests/getCostPerHalfDay');
 });
 
 // Integration tests
