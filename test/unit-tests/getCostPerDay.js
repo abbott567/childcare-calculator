@@ -3,7 +3,7 @@
 const {expect} = require('chai');
 const {getCostPerDay} = require('../../functions/getCostPerDay');
 
-describe('getChildAge(req)', () => {
+describe('getCostPerDay(req)', () => {
   it('should return 45 if the child is under 2 years old', () => {
     const age = 0;
     const costPerDay = getCostPerDay(age);
