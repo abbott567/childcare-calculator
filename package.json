@@ -3,11 +3,36 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "node ./bin/www",
+    "test": "xo"
+  },
+  "dependencies": {
+    "date-fns": "^2.0.0-alpha.24"
   },
   "devDependencies": {
     "chai": "^4.2.0",
     "mocha": "^5.2.0",
     "xo": "^0.23.0"
-  }
+  },
+  "xo": {
+    "space": true,
+    "esnext": true,
+    "env": [
+      "jquery",
+      "browser",
+      "mocha"
+    ],
+    "rules": {
+      "xo/no-process-exit": 0,
+      "import/no-unassigned-import": 0,
+      "unicorn/filename-case": 0,
+      "no-unused-vars": [
+        2,
+        {
+          "args": "after-used",
+          "argsIgnorePattern": "^_"
+        }
+      ]
+    }
+  }  
 }
