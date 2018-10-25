@@ -3,6 +3,7 @@
 // Unit tests
 describe('--unit tests', () => {
   require('./unit-tests/getChildAge');
+  require('./unit-tests/getCostPerDay');
 });
 
 // Integration tests
