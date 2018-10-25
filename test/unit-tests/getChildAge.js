@@ -22,7 +22,7 @@ describe('getChildAge(req)', () => {
     const age = getChildAge(req);
     expect(age).equal(0);
   });
-  it('should return 1 when 1.9 years between dob and today', () => {
+  it('should return 1 when 1.9 years between dob and startDate', () => {
     const req = {
       body: {
         dob: {
@@ -40,7 +40,7 @@ describe('getChildAge(req)', () => {
     const age = getChildAge(req);
     expect(age).equal(1);
   });
-  it('should return 2 when 2.9 years between dob and today', () => {
+  it('should return 2 when 2.9 years between dob and startDate', () => {
     const req = {
       body: {
         dob: {
