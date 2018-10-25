@@ -2,11 +2,10 @@
 
 const {differenceInYears} = require('date-fns');
 
-function getChildAge(req) {
-  const obj = req.body;
-  const dob = new Date(obj.dob.year, obj.dob.month - 1, obj.dob.day);
-  const startDate = new Date(obj.startDate.year, obj.startDate.month - 1, obj.startDate.day);
-  const age = differenceInYears(startDate, dob);
+function getChildAge(dateOfBirthObj, startDateObj) {
+  const dateOfBirth = new Date(dateOfBirthObj.year, dateOfBirthObj.month - 1, dateOfBirthObj.day);
+  const startDate = new Date(startDateObj.year, startDateObj.month - 1, startDateObj.day);
+  const age = differenceInYears(startDate, dateOfBirth);
   return age;
 }
 
