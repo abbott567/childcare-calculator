@@ -4,8 +4,230 @@
 {% block content %}
   <main>
     <div>
-      me
-      
+      <h1>Calculate your childcare costs</h1>
+
+      <form>
+        <div class="ymca-form-group">
+          <div class="ymca-radios">
+            <fieldset>
+              <legend class="ymca-legend">
+                Do you get free childcare?
+                <span class="ymca-hint">You can use GOVUK to <a href="#">check if you get free childcare</a>.</span>
+              </legend>
+              
+              <div class="ymca-radios__item" data-target="freeChildCare-hidden">
+                <input class="ymca-radio__button" id="freeChildCare-yes" name="freeChildcare" type="radio" value="Yes">
+                <label class="ymca-label ymca-label--radio" for="freeChildCare-yes">Yes</label>
+              </div>
+
+              <div class="ymca-radios__item">
+                <input class="ymca-radio__button" id="freeChildCare-no" name="freeChildcare" type="radio" value="No">
+                <label class="ymca-label ymca-label--radio" for="freeChildCare-no">No</label>
+              </div>
+            </fieldset>
+          </div>
+
+          <div class="ymca-inset-text js-hidden" id="freeChildCare-hidden">
+            <div class="ymca-form-group">
+              <div class="ymca-radios ymca-radios--inline">
+                <fieldset>
+                  <legend class="ymca-legend">
+                    How many hours free childcare do you get
+                  </legend>
+
+                  <div class="ymca-radios__item">
+                    <input class="ymca-radio__button" id="freeChildCare-15" name="freeChildcareAmount" type="radio" value="15">
+                    <label class="ymca-label ymca-label--radio" for="freeChildCare-15">15</label>
+                  </div>
+
+                  <div class="ymca-radios__item">
+                    <input class="ymca-radio__button" id="freeChildCare-30" name="freeChildcareAmount" type="radio" value="30">
+                    <label class="ymca-label ymca-label--radio" for="freeChildCare-30">30</label>
+                  </div>
+                </fieldset>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="ymca-form-group">
+          <fieldset class="ymca-date">
+            <legend class="ymca-legend">
+              What is your childs date of birth?
+            </legend>
+
+            <div class="ymca-date__item ymca-date__day">
+              <label class="ymca-label" for="dob-day">Day</label>
+              <input class="ymca-input-field" type="number" name="dob[day]" id="dob-day" />
+            </div>
+
+            <div class="ymca-date__item ymca-date__month">
+              <label class="ymca-label" for="dob-month">Month</label>
+              <input class="ymca-input-field" type="number" name="dob[month]" id="dob-month" />
+            </div>
+
+            <div class="ymca-date__item ymca-date__year">
+              <label class="ymca-label" for="dob-year">Year</label>
+              <input class="ymca-input-field" type="number" name="dob[year]" id="dob-year" />
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="ymca-form-group">
+          <fieldset class="ymca-date">
+            <legend class="ymca-legend">
+              When would you like the childcare to start?
+            </legend>
+
+            <div class="ymca-date__item ymca-date__day">
+              <label class="ymca-label" for="start-day">Day</label>
+              <input class="ymca-input-field" type="number" name="start[day]" id="start-day" />
+            </div>
+
+            <div class="ymca-date__item ymca-date__month">
+              <label class="ymca-label" for="start-month">Month</label>
+              <input class="ymca-input-field" type="number" name="start[month]" id="start-month" />
+            </div>
+
+            <div class="ymca-date__item ymca-date__year">
+              <label class="ymca-label" for="start-year">Year</label>
+              <input class="ymca-input-field" type="number" name="start[year]" id="start-year" />
+            </div>
+          </fieldset>
+        </div>
+
+        <div class="ymca-form-group">
+          <fieldset>
+            <legend class="ymca-legend">
+              Do you need full-time childcare?
+              <span class="ymca-hint">You can use GOVUK to.</span>
+            </legend>
+            
+            <div class="ymca-radios__item" data-target="part-time-hidden">
+              <input class="ymca-radio__button" type="radio" name="fulltime" value="Yes" id="fulltime-yes" />
+              <label class="ymca-label ymca-label--radio" for="fulltime-yes">Yes</label>
+            </div>
+
+            <div class="ymca-radios__item">
+              <input class="ymca-radio__button" type="radio" name="fulltime" value="Yes" id="fulltime-no"/>
+              <label class="ymca-label ymca-label--radio"for="fulltime-no">No</label>
+            </div>
+          </fieldset>
+
+          <div class="ymca-inset-text js-hidden" id="part-time-hidden">
+            <h2 class="ymca-body">
+              Choose what you need
+            </h2>
+            
+            <div class="ymca-form-group">
+              <fieldset>
+                <legend class="ymca-legend">Monday</legend>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="monday[]" value="full" id="monday-full" />
+                  <label class="ymca-label ymca-label--radio" for="monday-full">All day</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="monday[]" value="half" id="monday-morning" />
+                  <label class="ymca-label ymca-label--radio" for="monday-morning">Morning</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="monday[]" value="half" id="monday-afternoon" />
+                  <label class="ymca-label ymca-label--radio" for="monday-afternoon">Afternoon</label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="ymca-form-group">
+              <fieldset>
+                <legend class="ymca-legend">Tuesday</legend>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="tuesday[]" value="full" id="tuesday-full" />
+                  <label class="ymca-label ymca-label--radio" for="tuesday-full">All day</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="tuesday[]" value="half" id="tuesday-morning" />
+                  <label class="ymca-label ymca-label--radio" for="tuesday-morning">Morning</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="tuesday[]" value="half" id="tuesday-afternoon" />
+                  <label class="ymca-label ymca-label--radio" for="tuesday-afternoon">Afternoon</label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="ymca-form-group">
+              <fieldset>
+                <legend class="ymca-legend">Wednesday</legend>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="wednesday[]" value="full" id="wednesday-full" />
+                  <label class="ymca-label ymca-label--radio" for="wednesday-full">All day</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="wednesday[]" value="half" id="wednesday-morning" />
+                  <label class="ymca-label ymca-label--radio" for="wednesday-morning">Morning</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="wednesday[]" value="half" id="wednesday-afternoon" />
+                  <label class="ymca-label ymca-label--radio" for="wednesday-afternoon">Afternoon</label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="ymca-form-group">
+              <fieldset>
+                <legend class="ymca-legend">Thursday</legend>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="thursday[]" value="full" id="thursday-full" />
+                  <label class="ymca-label ymca-label--radio" for="thursday-full">All day</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="thursday[]" value="half" id="thursday-morning" />
+                  <label class="ymca-label ymca-label--radio" for="thursday-morning">Morning</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="thursday[]" value="half" id="thursday-afternoon" />
+                  <label class="ymca-label ymca-label--radio" for="thursday-afternoon">Afternoon</label>
+                </div>
+              </fieldset>
+            </div>
+
+            <div class="ymca-form-group">
+              <fieldset>
+                <legend class="ymca-legend">Friday</legend>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="friday[]" value="full" id="friday-full" />
+                  <label class="ymca-label ymca-label--radio" for="friday-full">All day</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="friday[]" value="half" id="friday-morning" />
+                  <label class="ymca-label ymca-label--radio" for="friday-morning">Morning</label>
+                </div>
+
+                <div class="ymca-radios__item">
+                  <input class="ymca-radio__button" type="radio" name="friday[]" value="half" id="friday-afternoon" />
+                  <label class="ymca-label ymca-label--radio" for="friday-afternoon">Afternoon</label>
+                </div>
+              </fieldset>
+            </div>
+          </div>
+        </div>
+
+        <button class="ymca-button">Continue</button>
+      </div>
     </div>
   </main>
 {% endblock %}
