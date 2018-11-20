@@ -18,18 +18,23 @@ function getCostPerWeek(daysArray, age, freeHours) {
   }
 
   if (freeHours === '15' || freeHours === 15) {
-    costPerWeek -= (costPerDay + costPerHalfDay);
+    if (age === 2) {
+      costPerWeek -= 78;
+    }
+    if (age === 3) {
+      costPerWeek -= 65.10;
+    }
   }
 
   if (freeHours === '30' || freeHours === 30) {
-    costPerWeek -= (costPerDay * 3);
+    costPerWeek -= 130.20;
   }
 
   if (costPerWeek < 0) {
     costPerWeek = 0;
   }
 
-  return costPerWeek;
+  return parseFloat(costPerWeek.toFixed(2));
 }
 
 module.exports = {getCostPerWeek};
