@@ -12,6 +12,9 @@ function getPrettyDays(days) {
   if (counts.halfDays === 0) {
     return `${counts.fullDays} full day${fs}`;
   }
+  if (counts.fullDays === 0) {
+    return `${counts.halfDays} half day${hs}`;
+  }
   return `${counts.fullDays} full day${fs} and ${counts.halfDays} half day${hs}`;
 }
 
