@@ -3,7 +3,7 @@
 const {expect} = require('chai');
 const {getPrettyDays} = require('../../../functions/browser/prettify');
 
-describe('getChildAge(req)', () => {
+describe('getPrettyDays(days)', () => {
   it('should return "5 full days" when days = f, f, f, f, f', () => {
     const days = ['full', 'full', 'full', 'full', 'full'];
     const prettyDays = getPrettyDays(days);
