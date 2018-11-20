@@ -56,7 +56,7 @@ $(document).on('submit', 'form', e => {
   const errors = getErrors(data);
 
   if (errors.length > 0) {
-    return console.log('render errors');
+    return console.log(errors);
   }
 
   const content = generateContent(data);
