@@ -1,4 +1,8 @@
 function getCostForFreeHours(numberOfFreeHours, age) {
+  if (age === 0) {
+    return 0;
+  }
+
   if (numberOfFreeHours === '15' || numberOfFreeHours === 15) {
     if (age === 2) {
       return 78;
