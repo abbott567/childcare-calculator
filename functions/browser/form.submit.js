@@ -12,6 +12,7 @@ $(document).on('submit', 'form', e => {
   const errors = getErrors(data);
 
   if (errors.length > 0) {
+    console.log(errors);
     return console.log('render errors');
   }
 
