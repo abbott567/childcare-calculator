@@ -1,7 +1,7 @@
 'use-strict';
 
 const {expect} = require('chai');
-const {getPrettyCost} = require('../../../functions/browser/prettify');
+const {getPrettyCost} = require('../../../../functions/browser/prettify');
 
 describe('getPrettyCost(number)', () => {
   it('should return contain a pound sign (£)', () => {

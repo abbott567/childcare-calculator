@@ -1,14 +1,16 @@
 'use-strict';
 
 // Unit tests
-describe('--unit tests', () => {
+describe('--calculations', () => {
   require('./unit-tests/getChildAge');
   require('./unit-tests/getCostForFreeHours');
   require('./unit-tests/getCostPerDay');
   require('./unit-tests/getCostPerHalfDay');
   require('./unit-tests/getCostPerWeek');
+});
 
-  require('./unit-tests/browser/getPrettyDays');
-  require('./unit-tests/browser/getPrettyAge');
-  require('./unit-tests/browser/getPrettyCost');
+describe('--formatting functions', () => {
+  require('./unit-tests/browser/prettify/getPrettyDays');
+  require('./unit-tests/browser/prettify/getPrettyAge');
+  require('./unit-tests/browser/prettify/getPrettyCost');
 });

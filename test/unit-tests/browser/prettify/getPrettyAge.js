@@ -1,7 +1,7 @@
 'use-strict';
 
 const {expect} = require('chai');
-const {getPrettyAge} = require('../../../functions/browser/prettify');
+const {getPrettyAge} = require('../../../../functions/browser/prettify');
 
 describe('getPrettyAge(age)', () => {
   it('should return "baby under 2" when age = 0', () => {

@@ -1,7 +1,7 @@
 'use-strict';
 
 const {expect} = require('chai');
-const {getPrettyDays} = require('../../../functions/browser/prettify');
+const {getPrettyDays} = require('../../../../functions/browser/prettify');
 
 describe('getPrettyDays(days)', () => {
   it('should return "5 full days" when days = f, f, f, f, f', () => {
