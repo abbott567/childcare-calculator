@@ -10,4 +10,5 @@ describe('--unit tests', () => {
 
   require('./unit-tests/browser/getPrettyDays');
   require('./unit-tests/browser/getPrettyAge');
+  require('./unit-tests/browser/getPrettyCost');
 });
