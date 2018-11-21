@@ -20,4 +20,5 @@ describe('--validation', () => {
   require('./unit-tests/browser/validation/validate.freeChildcare');
   require('./unit-tests/browser/validation/validate.freeChildcareAmount');
   require('./unit-tests/browser/validation/validate.fulltime');
+  require('./unit-tests/browser/validation/validate.startDate');
 });
