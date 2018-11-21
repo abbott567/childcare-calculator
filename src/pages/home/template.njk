@@ -7,7 +7,7 @@
       <h1>Calculate your childcare costs</h1>
 
       <form>
-        <div class="ymca-form-group">
+        <div class="ymca-form-group" id="fg-freeChildcare">
           <div class="ymca-radios">
             <fieldset>
               <legend class="ymca-legend">
@@ -28,7 +28,7 @@
           </div>
 
           <div class="ymca-inset-text js-hidden" id="freeChildcare-hidden">
-            <div class="ymca-form-group">
+            <div class="ymca-form-group" id="fg-freeChildcareAmount">
               <div class="ymca-radios ymca-radios--inline">
                 <fieldset>
                   <legend class="ymca-legend">
@@ -50,7 +50,7 @@
           </div>
         </div>
 
-        <div class="ymca-form-group">
+        <div class="ymca-form-group" id="fg-dob">
           <fieldset class="ymca-date">
             <legend class="ymca-legend">
               What is your childs date of birth?
@@ -73,7 +73,7 @@
           </fieldset>
         </div>
 
-        <div class="ymca-form-group">
+        <div class="ymca-form-group" id="fg-startDate">
           <fieldset class="ymca-date">
             <legend class="ymca-legend">
               When would you like the childcare to start?
@@ -96,7 +96,7 @@
           </fieldset>
         </div>
 
-        <div class="ymca-form-group">
+        <div class="ymca-form-group" id="fg-fulltime">
           <fieldset>
             <legend class="ymca-legend">
               Do you need full-time childcare?
@@ -119,7 +119,7 @@
               Choose what you need
             </h2>
             
-            <div class="ymca-form-group">
+            <div class="ymca-form-group" if="fg-partTime">
               <fieldset>
                 <legend class="ymca-legend">Monday</legend>
 

@@ -47,17 +47,50 @@ const {getErrors} = require('./validation');
 const {generateContent} = require('./generate.content');
 
 $(document).on('submit', 'form', e => {
+  clearErrors();
+
   e.preventDefault();
   const data = buildDataObject();
   const errors = getErrors(data);
 
   if (errors.length > 0) {
+    appendErrors(errors);
     return console.log(errors);
   }
 
   const content = generateContent(data);
   console.log(content);
 });
+
+function appendErrors(errors) {
+  $('main').prepend(`
+    <div class="ymca-error-summary">
+      <h2>Theres been a problem</h2>
+      <p>Check the following:</p>
+      <ul id="error-summary"></ul>
+    </div>`
+  );
+  errors.forEach(error => {
+    $('#error-summary').append(`
+      <li>
+        <a href="#${error.id}">${error.summary}</a>
+      </li>`
+    );
+    const $legend = $(document).find('#' + error.id).find('legend:first');
+    $legend.append(`
+      <span class="ymca-error">${error.label}</span>
+    `);
+  });
+}
+
+function clearErrors() {
+  const $summary = $('.ymca-error-summary:first');
+  const $errorLabel = $(document).find('.ymca-error');
+  $summary.remove();
+  $errorLabel.each(function () {
+    $(this).remove();
+  });
+}
 
 },{"./buildDataObject":2,"./generate.content":4,"./validation":12}],4:[function(require,module,exports){
 const {getCostPerDay} = require('./../getCostPerDay');
@@ -155,41 +188,52 @@ function validateDateOfBirth(dateOfBirth, errors) {
   if (!dateOfBirth.day) {
     errors.push({
       summary: 'What is your childs date of birth?: day cannot be blank',
-      label: 'Cannot be blank'
+      label: 'Day cannot be blank',
+      id: 'fg-dob'
     });
   } else if ((dateOfBirth.month === '2' && dateOfBirth.day > 29) || (septAprJunNov && dateOfBirth.day > 30)) {
     errors.push({
       summary: 'What is your childs date of birth?: This month does not have that many days',
-      label: 'Check the date of birth'
+      label: 'Enter a valid month',
+      id: 'fg-dob'
+
     });
   } else if (dateOfBirth.day === '0' || dateOfBirth.day > 31) {
     errors.push({
       summary: 'What is your childs date of birth?: enter a valid day',
-      label: 'Enter a valid day'
+      label: 'Enter a valid day',
+      id: 'fg-dob'
+
     });
   }
 
   if (!dateOfBirth.month) {
     errors.push({
       summary: 'What is your childs date of birth?: month cannot be blank',
-      label: 'Cannot be blank'
+      label: 'Month cannot be blank',
+      id: 'fg-dob'
+
     });
   } else if (dateOfBirth.month === '0' || dateOfBirth.month > 12) {
     errors.push({
       summary: 'What is your childs date of birth?: enter a valid month',
-      label: 'Enter a valid month'
+      label: 'Enter a valid month',
+      id: 'fg-dob'
     });
   }
 
   if (!dateOfBirth.year) {
     errors.push({
       summary: 'What is your childs date of birth?: year cannot be blank',
-      label: 'Cannot be blank'
+      label: 'Year cannot be blank',
+      id: 'fg-dob'
+
     });
   } else if (dateOfBirth.year.length !== 4) {
     errors.push({
       summary: 'What is your childs date of birth?: enter a valid year',
-      label: 'Enter a valid year'
+      label: 'Enter a valid year',
+      id: 'fg-dob'
     });
   }
   return errors;
@@ -202,7 +246,8 @@ function validateFreeChildcare(freeChildcare, errors) {
   if (!freeChildcare) {
     errors.push({
       summary: 'Do you get free childcare?: choose an option',
-      label: 'Choose an option'
+      label: 'Choose an option',
+      id: 'fg-freeChildcare'
     });
   }
   return errors;
@@ -215,7 +260,8 @@ function validateFreeChildcareAmount(freeChildcareAmount, errors) {
   if (!freeChildcareAmount) {
     errors.push({
       summary: 'How many hours free childcare do you get?: choose an option',
-      label: 'Choose an option'
+      label: 'Choose an option',
+      id: 'fg-freeChildcareAmount'
     });
   }
   return errors;
@@ -228,7 +274,8 @@ function validateFulltime(fulltime, errors) {
   if (!fulltime) {
     errors.push({
       summary: 'Do you need full-time childcare?: choose an option',
-      label: 'Choose an option'
+      label: 'Choose an option',
+      id: 'fg-fulltime'
     });
   }
   return errors;
@@ -243,41 +290,48 @@ function validateStartDate(startDate, errors) {
   if (!startDate.day) {
     errors.push({
       summary: 'When would you like the childcare to start?: day cannot be blank',
-      label: 'Cannot be blank'
+      label: 'Day cannot be blank',
+      id: 'fg-startDate'
     });
   } else if ((startDate.month === '2' && startDate.day > 29) || (septAprJunNov && startDate.day > 30)) {
     errors.push({
       summary: 'When would you like the childcare to start?: This month does not have that many days',
-      label: 'Check the date you would like your childcare to start'
+      label: 'Enter a valid month',
+      id: 'fg-startDate'
     });
   } else if (startDate.day === '0' || startDate.day > 31) {
     errors.push({
       summary: 'When would you like the childcare to start?: enter a valid day',
-      label: 'Enter a valid day'
+      label: 'Enter a valid day',
+      id: 'fg-startDate'
     });
   }
 
   if (!startDate.month) {
     errors.push({
       summary: 'When would you like the childcare to start?: month cannot be blank',
-      label: 'Cannot be blank'
+      label: 'Month cannot be blank',
+      id: 'fg-startDate'
     });
   } else if (startDate.month === '0' || startDate.month > 12) {
     errors.push({
       summary: 'When would you like the childcare to start?: enter a valid month',
-      label: 'Enter a valid month'
+      label: 'Enter a valid month',
+      id: 'fg-startDate'
     });
   }
 
   if (!startDate.year) {
     errors.push({
       summary: 'When would you like the childcare to start?: year cannot be blank',
-      label: 'Cannot be blank'
+      label: 'Year cannot be blank',
+      id: 'fg-startDate'
     });
   } else if (startDate.year.length !== 4) {
     errors.push({
       summary: 'When would you like the childcare to start?: enter a valid year',
-      label: 'Enter a valid year'
+      label: 'Enter a valid year',
+      id: 'fg-startDate'
     });
   }
   return errors;

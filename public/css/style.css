@@ -25,6 +25,21 @@ a:focus {
   outline-offset: 0;
 }
 
+.ymca-error-summary {
+  border: 5px solid #cc0000;
+  padding: 20px;
+}
+
+.ymca-error-summary a {
+  color: #cc0000;
+  font-weight: bold;
+}
+
+.ymca-error {
+  display: block;
+  color: #cc0000;
+}
+
 .ymca-button {
   background-color: #A90B76;
   color: #ffffff;
