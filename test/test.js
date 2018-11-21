@@ -14,3 +14,7 @@ describe('--formatting functions', () => {
   require('./unit-tests/browser/prettify/getPrettyAge');
   require('./unit-tests/browser/prettify/getPrettyCost');
 });
+
+describe('--validation', () => {
+  require('./unit-tests/browser/validation/validate.dateOfBirth');
+});
