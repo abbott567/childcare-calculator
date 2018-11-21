@@ -3,7 +3,7 @@ require('./browser/showHide');
 require('./browser/form.submit');
 require('./browser/validation');
 
-},{"./browser/form.submit":3,"./browser/showHide":5,"./browser/validation":11}],2:[function(require,module,exports){
+},{"./browser/form.submit":3,"./browser/showHide":6,"./browser/validation":12}],2:[function(require,module,exports){
 const {getChildAge} = require('./../getChildAge');
 
 function buildDataObject() {
@@ -41,14 +41,10 @@ function buildDataObject() {
 
 module.exports = {buildDataObject};
 
-},{"./../getChildAge":12}],3:[function(require,module,exports){
+},{"./../getChildAge":13}],3:[function(require,module,exports){
 const {buildDataObject} = require('./buildDataObject');
-const {getCostPerDay} = require('./../getCostPerDay');
-const {getCostPerHalfDay} = require('./../getCostPerHalfDay');
-const {getCostPerWeek} = require('./../getCostPerWeek');
-const {getCostForFreeHours} = require('./../getCostForFreeHours');
-const {getPrettyAge, getPrettyDays, getPrettyCost} = require('./prettify');
 const {getErrors} = require('./validation');
+const {generateContent} = require('./generate.content');
 
 $(document).on('submit', 'form', e => {
   e.preventDefault();
@@ -62,6 +58,13 @@ $(document).on('submit', 'form', e => {
   const content = generateContent(data);
   console.log(content);
 });
+
+},{"./buildDataObject":2,"./generate.content":4,"./validation":12}],4:[function(require,module,exports){
+const {getCostPerDay} = require('./../getCostPerDay');
+const {getCostPerHalfDay} = require('./../getCostPerHalfDay');
+const {getCostPerWeek} = require('./../getCostPerWeek');
+const {getCostForFreeHours} = require('./../getCostForFreeHours');
+const {getPrettyAge, getPrettyDays, getPrettyCost} = require('./prettify');
 
 function generateContent(data) {
   const costPerWeek = getCostPerWeek(data.days, data.age, data.freeChildcareAmount);
@@ -84,7 +87,9 @@ function generateContent(data) {
   };
 }
 
-},{"./../getCostForFreeHours":13,"./../getCostPerDay":14,"./../getCostPerHalfDay":15,"./../getCostPerWeek":16,"./buildDataObject":2,"./prettify":4,"./validation":11}],4:[function(require,module,exports){
+module.exports = {generateContent};
+
+},{"./../getCostForFreeHours":14,"./../getCostPerDay":15,"./../getCostPerHalfDay":16,"./../getCostPerWeek":17,"./prettify":5}],5:[function(require,module,exports){
 function getPrettyDays(days) {
   const counts = {fullDays: 0, halfDays: 0};
   for (let i = 0; i < days.length; i++) {
@@ -98,6 +103,9 @@ function getPrettyDays(days) {
   const hs = counts.halfDays === 1 ? '' : 's';
   if (counts.halfDays === 0) {
     return `${counts.fullDays} full day${fs}`;
+  }
+  if (counts.fullDays === 0) {
+    return `${counts.halfDays} half day${hs}`;
   }
   return `${counts.fullDays} full day${fs} and ${counts.halfDays} half day${hs}`;
 }
@@ -115,7 +123,7 @@ function getPrettyCost(number) {
 
 module.exports = {getPrettyDays, getPrettyAge, getPrettyCost};
 
-},{}],5:[function(require,module,exports){
+},{}],6:[function(require,module,exports){
 function hideHidden() {
   $(document).find('.js-hidden').each(function () {
     $(this).hide();
@@ -140,14 +148,21 @@ $(document).on('click', '#fulltime-no', () => {
   $('#part-time-hidden').show();
 });
 
-},{}],6:[function(require,module,exports){
+},{}],7:[function(require,module,exports){
 function validateDateOfBirth(dateOfBirth, errors) {
+  const septAprJunNov = ['4', '6', '9', '11'].includes(dateOfBirth.month);
+
   if (!dateOfBirth.day) {
     errors.push({
       summary: 'What is your childs date of birth?: day cannot be blank',
       label: 'Cannot be blank'
     });
-  } else if (dateOfBirth.day > 31) {
+  } else if ((dateOfBirth.month === '2' && dateOfBirth.day > 29) || (septAprJunNov && dateOfBirth.day > 30)) {
+    errors.push({
+      summary: 'What is your childs date of birth?: This month does not have that many days',
+      label: 'Check the date of birth'
+    });
+  } else if (dateOfBirth.day === '0' || dateOfBirth.day > 31) {
     errors.push({
       summary: 'What is your childs date of birth?: enter a valid day',
       label: 'Enter a valid day'
@@ -159,7 +174,7 @@ function validateDateOfBirth(dateOfBirth, errors) {
       summary: 'What is your childs date of birth?: month cannot be blank',
       label: 'Cannot be blank'
     });
-  } else if (dateOfBirth.month > 12) {
+  } else if (dateOfBirth.month === '0' || dateOfBirth.month > 12) {
     errors.push({
       summary: 'What is your childs date of birth?: enter a valid month',
       label: 'Enter a valid month'
@@ -182,7 +197,7 @@ function validateDateOfBirth(dateOfBirth, errors) {
 
 module.exports = {validateDateOfBirth};
 
-},{}],7:[function(require,module,exports){
+},{}],8:[function(require,module,exports){
 function validateFreeChildcare(freeChildcare, errors) {
   if (!freeChildcare) {
     errors.push({
@@ -195,7 +210,7 @@ function validateFreeChildcare(freeChildcare, errors) {
 
 module.exports = {validateFreeChildcare};
 
-},{}],8:[function(require,module,exports){
+},{}],9:[function(require,module,exports){
 function validateFreeChildcareAmount(freeChildcareAmount, errors) {
   if (!freeChildcareAmount) {
     errors.push({
@@ -208,7 +223,7 @@ function validateFreeChildcareAmount(freeChildcareAmount, errors) {
 
 module.exports = {validateFreeChildcareAmount};
 
-},{}],9:[function(require,module,exports){
+},{}],10:[function(require,module,exports){
 function validateFulltime(fulltime, errors) {
   if (!fulltime) {
     errors.push({
@@ -221,14 +236,21 @@ function validateFulltime(fulltime, errors) {
 
 module.exports = {validateFulltime};
 
-},{}],10:[function(require,module,exports){
+},{}],11:[function(require,module,exports){
 function validateStartDate(startDate, errors) {
+  const septAprJunNov = ['4', '6', '9', '11'].includes(startDate.month);
+
   if (!startDate.day) {
     errors.push({
       summary: 'When would you like the childcare to start?: day cannot be blank',
       label: 'Cannot be blank'
     });
-  } else if (startDate.day > 31) {
+  } else if ((startDate.month === '2' && startDate.day > 29) || (septAprJunNov && startDate.day > 30)) {
+    errors.push({
+      summary: 'When would you like the childcare to start?: This month does not have that many days',
+      label: 'Check the date you would like your childcare to start'
+    });
+  } else if (startDate.day === '0' || startDate.day > 31) {
     errors.push({
       summary: 'When would you like the childcare to start?: enter a valid day',
       label: 'Enter a valid day'
@@ -240,7 +262,7 @@ function validateStartDate(startDate, errors) {
       summary: 'When would you like the childcare to start?: month cannot be blank',
       label: 'Cannot be blank'
     });
-  } else if (startDate.month > 12) {
+  } else if (startDate.month === '0' || startDate.month > 12) {
     errors.push({
       summary: 'When would you like the childcare to start?: enter a valid month',
       label: 'Enter a valid month'
@@ -263,7 +285,7 @@ function validateStartDate(startDate, errors) {
 
 module.exports = {validateStartDate};
 
-},{}],11:[function(require,module,exports){
+},{}],12:[function(require,module,exports){
 const {validateDateOfBirth} = require('./validate.dateOfBirth');
 const {validateStartDate} = require('./validate.startDate');
 const {validateFreeChildcare} = require('./validate.freeChildcare');
@@ -284,7 +306,7 @@ function getErrors(data) {
 
 module.exports = {getErrors};
 
-},{"./validate.dateOfBirth":6,"./validate.freeChildcare":7,"./validate.freeChildcareAmount":8,"./validate.fulltime":9,"./validate.startDate":10}],12:[function(require,module,exports){
+},{"./validate.dateOfBirth":7,"./validate.freeChildcare":8,"./validate.freeChildcareAmount":9,"./validate.fulltime":10,"./validate.startDate":11}],13:[function(require,module,exports){
 'use strict';
 
 const {differenceInYears} = require('date-fns');
@@ -298,8 +320,12 @@ function getChildAge(dateOfBirthObj, startDateObj) {
 
 module.exports = {getChildAge};
 
-},{"date-fns":110}],13:[function(require,module,exports){
+},{"date-fns":111}],14:[function(require,module,exports){
 function getCostForFreeHours(numberOfFreeHours, age) {
+  if (age === 0) {
+    return 0;
+  }
+
   if (numberOfFreeHours === '15' || numberOfFreeHours === 15) {
     if (age === 2) {
       return 78;
@@ -318,7 +344,7 @@ function getCostForFreeHours(numberOfFreeHours, age) {
 
 module.exports = {getCostForFreeHours};
 
-},{}],14:[function(require,module,exports){
+},{}],15:[function(require,module,exports){
 'use strict';
 
 function getCostPerDay(age) {
@@ -327,7 +353,7 @@ function getCostPerDay(age) {
 
 module.exports = {getCostPerDay};
 
-},{}],15:[function(require,module,exports){
+},{}],16:[function(require,module,exports){
 'use strict';
 
 function getCostPerHalfDay(age) {
@@ -336,7 +362,7 @@ function getCostPerHalfDay(age) {
 
 module.exports = {getCostPerHalfDay};
 
-},{}],16:[function(require,module,exports){
+},{}],17:[function(require,module,exports){
 'use strict';
 
 const {getCostPerDay} = require('./getCostPerDay');
@@ -369,7 +395,7 @@ function getCostPerWeek(daysArray, age, freeHours) {
 
 module.exports = {getCostPerWeek};
 
-},{"./getCostForFreeHours":13,"./getCostPerDay":14,"./getCostPerHalfDay":15}],17:[function(require,module,exports){
+},{"./getCostForFreeHours":14,"./getCostPerDay":15,"./getCostPerHalfDay":16}],18:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -389,7 +415,7 @@ function cloneObject(dirtyObject) {
   return object;
 }
 module.exports = exports["default"];
-},{}],18:[function(require,module,exports){
+},{}],19:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -418,7 +444,7 @@ function getTimezoneOffsetInMilliseconds(dirtyDate) {
   return baseTimezoneOffset * MILLISECONDS_IN_MINUTE + millisecondsPartOfTimezoneOffset;
 }
 module.exports = exports["default"];
-},{}],19:[function(require,module,exports){
+},{}],20:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -450,7 +476,7 @@ function getUTCDayOfYear(dirtyDate, dirtyOptions) {
   return Math.floor(difference / MILLISECONDS_IN_DAY) + 1;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197}],20:[function(require,module,exports){
+},{"../../toDate/index.js":198}],21:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -490,7 +516,7 @@ function getUTCISOWeek(dirtyDate, dirtyOptions) {
   return Math.round(diff / MILLISECONDS_IN_WEEK) + 1;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../startOfUTCISOWeek/index.js":29,"../startOfUTCISOWeekYear/index.js":30}],21:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../startOfUTCISOWeek/index.js":30,"../startOfUTCISOWeekYear/index.js":31}],22:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -537,7 +563,7 @@ function getUTCISOWeekYear(dirtyDate, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../startOfUTCISOWeek/index.js":29}],22:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../startOfUTCISOWeek/index.js":30}],23:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -577,7 +603,7 @@ function getUTCWeek(dirtyDate, dirtyOptions) {
   return Math.round(diff / MILLISECONDS_IN_WEEK) + 1;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../startOfUTCWeek/index.js":31,"../startOfUTCWeekYear/index.js":32}],23:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../startOfUTCWeek/index.js":32,"../startOfUTCWeekYear/index.js":33}],24:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -639,7 +665,7 @@ function getUTCWeekYear(dirtyDate, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../startOfUTCWeek/index.js":31,"../toInteger/index.js":33}],24:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../startOfUTCWeek/index.js":32,"../toInteger/index.js":34}],25:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -656,7 +682,7 @@ function isProtectedToken(token) {
 function throwProtectedError(token) {
   throw new RangeError('`options.awareOfUnicodeTokens` must be set to `true` to use `' + token + '` token; see: https://git.io/fxCyr');
 }
-},{}],25:[function(require,module,exports){
+},{}],26:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -706,7 +732,7 @@ function setUTCDay(dirtyDate, dirtyDay, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../toInteger/index.js":33}],26:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../toInteger/index.js":34}],27:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -750,7 +776,7 @@ function setUTCISODay(dirtyDate, dirtyDay, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../toInteger/index.js":33}],27:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../toInteger/index.js":34}],28:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -786,7 +812,7 @@ function setUTCISOWeek(dirtyDate, dirtyISOWeek, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../getUTCISOWeek/index.js":20,"../toInteger/index.js":33}],28:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../getUTCISOWeek/index.js":21,"../toInteger/index.js":34}],29:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -822,7 +848,7 @@ function setUTCWeek(dirtyDate, dirtyWeek, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../getUTCWeek/index.js":22,"../toInteger/index.js":33}],29:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../getUTCWeek/index.js":23,"../toInteger/index.js":34}],30:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -854,7 +880,7 @@ function startOfUTCISOWeek(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197}],30:[function(require,module,exports){
+},{"../../toDate/index.js":198}],31:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -887,7 +913,7 @@ function startOfUTCISOWeekYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../getUTCISOWeekYear/index.js":21,"../startOfUTCISOWeek/index.js":29}],31:[function(require,module,exports){
+},{"../getUTCISOWeekYear/index.js":22,"../startOfUTCISOWeek/index.js":30}],32:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -932,7 +958,7 @@ function startOfUTCWeek(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../../toDate/index.js":197,"../toInteger/index.js":33}],32:[function(require,module,exports){
+},{"../../toDate/index.js":198,"../toInteger/index.js":34}],33:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -975,7 +1001,7 @@ function startOfUTCWeekYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../getUTCWeekYear/index.js":23,"../startOfUTCWeek/index.js":31,"../toInteger/index.js":33}],33:[function(require,module,exports){
+},{"../getUTCWeekYear/index.js":24,"../startOfUTCWeek/index.js":32,"../toInteger/index.js":34}],34:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -996,7 +1022,7 @@ function toInteger(dirtyNumber) {
   return number < 0 ? Math.ceil(number) : Math.floor(number);
 }
 module.exports = exports["default"];
-},{}],34:[function(require,module,exports){
+},{}],35:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1046,7 +1072,7 @@ function addDays(dirtyDate, dirtyAmount, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],35:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],36:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1096,7 +1122,7 @@ function addHours(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, amount * MILLISECONDS_IN_HOUR, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMilliseconds/index.js":37}],36:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMilliseconds/index.js":38}],37:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1150,7 +1176,7 @@ function addISOWeekYears(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index6.default)(dirtyDate, (0, _index4.default)(dirtyDate, dirtyOptions) + amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getISOWeekYear/index.js":95,"../setISOWeekYear/index.js":166}],37:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getISOWeekYear/index.js":96,"../setISOWeekYear/index.js":167}],38:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1199,7 +1225,7 @@ function addMilliseconds(dirtyDate, dirtyAmount, dirtyOptions) {
   return new Date(timestamp + amount);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],38:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],39:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1249,7 +1275,7 @@ function addMinutes(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, amount * MILLISECONDS_IN_MINUTE, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMilliseconds/index.js":37}],39:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMilliseconds/index.js":38}],40:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1310,7 +1336,7 @@ function addMonths(dirtyDate, dirtyAmount, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getDaysInMonth/index.js":89,"../toDate/index.js":197}],40:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getDaysInMonth/index.js":90,"../toDate/index.js":198}],41:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1359,7 +1385,7 @@ function addQuarters(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, months, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMonths/index.js":39}],41:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMonths/index.js":40}],42:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1407,7 +1433,7 @@ function addSeconds(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, amount * 1000, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMilliseconds/index.js":37}],42:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMilliseconds/index.js":38}],43:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1456,7 +1482,7 @@ function addWeeks(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, days, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addDays/index.js":34}],43:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addDays/index.js":35}],44:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1504,7 +1530,7 @@ function addYears(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, amount * 12, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMonths/index.js":39}],44:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMonths/index.js":40}],45:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1571,7 +1597,7 @@ function areIntervalsOverlapping(dirtyIntervalLeft, dirtyIntervalRight, dirtyOpt
   return leftStartTime < rightEndTime && rightStartTime < leftEndTime;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],45:[function(require,module,exports){
+},{"../toDate/index.js":198}],46:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1660,7 +1686,7 @@ function closestIndexTo(dirtyDateToCompare, dirtyDatesArray, dirtyOptions) {
   return result;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],46:[function(require,module,exports){
+},{"../toDate/index.js":198}],47:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1747,7 +1773,7 @@ function closestTo(dirtyDateToCompare, dirtyDatesArray, dirtyOptions) {
   return result;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],47:[function(require,module,exports){
+},{"../toDate/index.js":198}],48:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1819,7 +1845,7 @@ function compareAsc(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],48:[function(require,module,exports){
+},{"../toDate/index.js":198}],49:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1891,7 +1917,7 @@ function compareDesc(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],49:[function(require,module,exports){
+},{"../toDate/index.js":198}],50:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -1961,7 +1987,7 @@ function differenceInCalendarDays(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return Math.round((timestampLeft - timestampRight) / MILLISECONDS_IN_DAY);
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../startOfDay/index.js":175}],50:[function(require,module,exports){
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../startOfDay/index.js":176}],51:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2009,7 +2035,7 @@ function differenceInCalendarISOWeekYears(dirtyDateLeft, dirtyDateRight, dirtyOp
   return (0, _index2.default)(dirtyDateLeft, dirtyOptions) - (0, _index2.default)(dirtyDateRight, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../getISOWeekYear/index.js":95}],51:[function(require,module,exports){
+},{"../getISOWeekYear/index.js":96}],52:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2072,7 +2098,7 @@ function differenceInCalendarISOWeeks(dirtyDateLeft, dirtyDateRight, dirtyOption
   return Math.round((timestampLeft - timestampRight) / MILLISECONDS_IN_WEEK);
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../startOfISOWeek/index.js":178}],52:[function(require,module,exports){
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../startOfISOWeek/index.js":179}],53:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2124,7 +2150,7 @@ function differenceInCalendarMonths(dirtyDateLeft, dirtyDateRight, dirtyOptions)
   return yearDiff * 12 + monthDiff;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],53:[function(require,module,exports){
+},{"../toDate/index.js":198}],54:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2180,7 +2206,7 @@ function differenceInCalendarQuarters(dirtyDateLeft, dirtyDateRight, dirtyOption
   return yearDiff * 4 + quarterDiff;
 }
 module.exports = exports['default'];
-},{"../getQuarter/index.js":101,"../toDate/index.js":197}],54:[function(require,module,exports){
+},{"../getQuarter/index.js":102,"../toDate/index.js":198}],55:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2254,7 +2280,7 @@ function differenceInCalendarWeeks(dirtyDateLeft, dirtyDateRight, dirtyOptions) 
   return Math.round((timestampLeft - timestampRight) / MILLISECONDS_IN_WEEK);
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../startOfWeek/index.js":184}],55:[function(require,module,exports){
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../startOfWeek/index.js":185}],56:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2303,7 +2329,7 @@ function differenceInCalendarYears(dirtyDateLeft, dirtyDateRight, dirtyOptions) 
   return dateLeft.getFullYear() - dateRight.getFullYear();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],56:[function(require,module,exports){
+},{"../toDate/index.js":198}],57:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2378,7 +2404,7 @@ function differenceInDays(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return result === 0 ? 0 : result;
 }
 module.exports = exports['default'];
-},{"../compareAsc/index.js":47,"../differenceInCalendarDays/index.js":49,"../toDate/index.js":197}],57:[function(require,module,exports){
+},{"../compareAsc/index.js":48,"../differenceInCalendarDays/index.js":50,"../toDate/index.js":198}],58:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2427,7 +2453,7 @@ function differenceInHours(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return diff > 0 ? Math.floor(diff) : Math.ceil(diff);
 }
 module.exports = exports['default'];
-},{"../differenceInMilliseconds/index.js":59}],58:[function(require,module,exports){
+},{"../differenceInMilliseconds/index.js":60}],59:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2500,7 +2526,7 @@ function differenceInISOWeekYears(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return result === 0 ? 0 : result;
 }
 module.exports = exports['default'];
-},{"../compareAsc/index.js":47,"../differenceInCalendarISOWeekYears/index.js":50,"../subISOWeekYears/index.js":189,"../toDate/index.js":197}],59:[function(require,module,exports){
+},{"../compareAsc/index.js":48,"../differenceInCalendarISOWeekYears/index.js":51,"../subISOWeekYears/index.js":190,"../toDate/index.js":198}],60:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2549,7 +2575,7 @@ function differenceInMilliseconds(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeft.getTime() - dateRight.getTime();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],60:[function(require,module,exports){
+},{"../toDate/index.js":198}],61:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2598,7 +2624,7 @@ function differenceInMinutes(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return diff > 0 ? Math.floor(diff) : Math.ceil(diff);
 }
 module.exports = exports['default'];
-},{"../differenceInMilliseconds/index.js":59}],61:[function(require,module,exports){
+},{"../differenceInMilliseconds/index.js":60}],62:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2664,7 +2690,7 @@ function differenceInMonths(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return result === 0 ? 0 : result;
 }
 module.exports = exports['default'];
-},{"../compareAsc/index.js":47,"../differenceInCalendarMonths/index.js":52,"../toDate/index.js":197}],62:[function(require,module,exports){
+},{"../compareAsc/index.js":48,"../differenceInCalendarMonths/index.js":53,"../toDate/index.js":198}],63:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2711,7 +2737,7 @@ function differenceInQuarters(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return diff > 0 ? Math.floor(diff) : Math.ceil(diff);
 }
 module.exports = exports['default'];
-},{"../differenceInMonths/index.js":61}],63:[function(require,module,exports){
+},{"../differenceInMonths/index.js":62}],64:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2759,7 +2785,7 @@ function differenceInSeconds(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return diff > 0 ? Math.floor(diff) : Math.ceil(diff);
 }
 module.exports = exports['default'];
-},{"../differenceInMilliseconds/index.js":59}],64:[function(require,module,exports){
+},{"../differenceInMilliseconds/index.js":60}],65:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2806,7 +2832,7 @@ function differenceInWeeks(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return diff > 0 ? Math.floor(diff) : Math.ceil(diff);
 }
 module.exports = exports['default'];
-},{"../differenceInDays/index.js":56}],65:[function(require,module,exports){
+},{"../differenceInDays/index.js":57}],66:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2872,7 +2898,7 @@ function differenceInYears(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return result === 0 ? 0 : result;
 }
 module.exports = exports['default'];
-},{"../compareAsc/index.js":47,"../differenceInCalendarYears/index.js":55,"../toDate/index.js":197}],66:[function(require,module,exports){
+},{"../compareAsc/index.js":48,"../differenceInCalendarYears/index.js":56,"../toDate/index.js":198}],67:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -2946,7 +2972,7 @@ function eachDayOfInterval(dirtyInterval, dirtyOptions) {
   return dates;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],67:[function(require,module,exports){
+},{"../toDate/index.js":198}],68:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3042,7 +3068,7 @@ function eachWeekOfInterval(dirtyInterval, dirtyOptions) {
   return weeks;
 }
 module.exports = exports['default'];
-},{"../addWeeks/index.js":42,"../startOfWeek/index.js":184,"../toDate/index.js":197}],68:[function(require,module,exports){
+},{"../addWeeks/index.js":43,"../startOfWeek/index.js":185,"../toDate/index.js":198}],69:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3087,7 +3113,7 @@ function endOfDay(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],69:[function(require,module,exports){
+},{"../toDate/index.js":198}],70:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3134,7 +3160,7 @@ function endOfDecade(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],70:[function(require,module,exports){
+},{"../toDate/index.js":198}],71:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3179,7 +3205,7 @@ function endOfHour(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],71:[function(require,module,exports){
+},{"../toDate/index.js":198}],72:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3230,7 +3256,7 @@ function endOfISOWeek(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, endOfWeekOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/cloneObject/index.js":17,"../endOfWeek/index.js":77}],72:[function(require,module,exports){
+},{"../_lib/cloneObject/index.js":18,"../endOfWeek/index.js":78}],73:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3286,7 +3312,7 @@ function endOfISOWeekYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../getISOWeekYear/index.js":95,"../startOfISOWeek/index.js":178}],73:[function(require,module,exports){
+},{"../getISOWeekYear/index.js":96,"../startOfISOWeek/index.js":179}],74:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3331,7 +3357,7 @@ function endOfMinute(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],74:[function(require,module,exports){
+},{"../toDate/index.js":198}],75:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3378,7 +3404,7 @@ function endOfMonth(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],75:[function(require,module,exports){
+},{"../toDate/index.js":198}],76:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3426,7 +3452,7 @@ function endOfQuarter(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],76:[function(require,module,exports){
+},{"../toDate/index.js":198}],77:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3471,7 +3497,7 @@ function endOfSecond(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],77:[function(require,module,exports){
+},{"../toDate/index.js":198}],78:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3544,7 +3570,7 @@ function endOfWeek(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],78:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],79:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -3591,7 +3617,7 @@ function endOfYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],79:[function(require,module,exports){
+},{"../toDate/index.js":198}],80:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4331,7 +4357,7 @@ function formatTimezoneShort(offset, dirtyDelimeter) {
 
 exports.default = formatters;
 module.exports = exports['default'];
-},{"../../../_lib/getUTCDayOfYear/index.js":19,"../../../_lib/getUTCISOWeek/index.js":20,"../../../_lib/getUTCISOWeekYear/index.js":21,"../../../_lib/getUTCWeek/index.js":22,"../../../_lib/getUTCWeekYear/index.js":23}],80:[function(require,module,exports){
+},{"../../../_lib/getUTCDayOfYear/index.js":20,"../../../_lib/getUTCISOWeek/index.js":21,"../../../_lib/getUTCISOWeekYear/index.js":22,"../../../_lib/getUTCWeek/index.js":23,"../../../_lib/getUTCWeekYear/index.js":24}],81:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4402,7 +4428,7 @@ var longFormatters = {
 
 exports.default = longFormatters;
 module.exports = exports['default'];
-},{}],81:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -4847,7 +4873,7 @@ function cleanEscapedString(input) {
   return input.match(escapedStringRegExp)[1].replace(doubleQuoteRegExp, "'");
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../_lib/protectedTokens/index.js":24,"../_lib/toInteger/index.js":33,"../isValid/index.js":134,"../locale/en-US/index.js":154,"../subMilliseconds/index.js":190,"../toDate/index.js":197,"./_lib/formatters/index.js":79,"./_lib/longFormatters/index.js":80}],82:[function(require,module,exports){
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../_lib/protectedTokens/index.js":25,"../_lib/toInteger/index.js":34,"../isValid/index.js":135,"../locale/en-US/index.js":155,"../subMilliseconds/index.js":191,"../toDate/index.js":198,"./_lib/formatters/index.js":80,"./_lib/longFormatters/index.js":81}],83:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5093,7 +5119,7 @@ function formatDistance(dirtyDate, dirtyBaseDate, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../_lib/cloneObject/index.js":17,"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../compareAsc/index.js":47,"../differenceInMonths/index.js":61,"../differenceInSeconds/index.js":63,"../locale/en-US/index.js":154,"../toDate/index.js":197}],83:[function(require,module,exports){
+},{"../_lib/cloneObject/index.js":18,"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../compareAsc/index.js":48,"../differenceInMonths/index.js":62,"../differenceInSeconds/index.js":64,"../locale/en-US/index.js":155,"../toDate/index.js":198}],84:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5322,7 +5348,7 @@ function formatDistanceStrict(dirtyDate, dirtyBaseDate, dirtyOptions) {
   throw new RangeError("unit must be 'second', 'minute', 'hour', 'day', 'month' or 'year'");
 }
 module.exports = exports['default'];
-},{"../_lib/cloneObject/index.js":17,"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../compareAsc/index.js":47,"../differenceInSeconds/index.js":63,"../locale/en-US/index.js":154,"../toDate/index.js":197}],84:[function(require,module,exports){
+},{"../_lib/cloneObject/index.js":18,"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../compareAsc/index.js":48,"../differenceInSeconds/index.js":64,"../locale/en-US/index.js":155,"../toDate/index.js":198}],85:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5436,7 +5462,7 @@ function formatRelative(dirtyDate, dirtyBaseDate, dirtyOptions) {
   return (0, _index6.default)(date, formatStr, options);
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../differenceInCalendarDays/index.js":49,"../format/index.js":81,"../locale/en-US/index.js":154,"../subMilliseconds/index.js":190,"../toDate/index.js":197}],85:[function(require,module,exports){
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../differenceInCalendarDays/index.js":50,"../format/index.js":82,"../locale/en-US/index.js":155,"../subMilliseconds/index.js":191,"../toDate/index.js":198}],86:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5484,7 +5510,7 @@ function fromUnixTime(dirtyUnixTime, dirtyOptions) {
   return (0, _index2.default)(unixTime * 1000, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],86:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],87:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5528,7 +5554,7 @@ function getDate(dirtyDate, dirtyOptions) {
   return dayOfMonth;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],87:[function(require,module,exports){
+},{"../toDate/index.js":198}],88:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5572,7 +5598,7 @@ function getDay(dirtyDate, dirtyOptions) {
   return day;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],88:[function(require,module,exports){
+},{"../toDate/index.js":198}],89:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5625,7 +5651,7 @@ function getDayOfYear(dirtyDate, dirtyOptions) {
   return dayOfYear;
 }
 module.exports = exports['default'];
-},{"../differenceInCalendarDays/index.js":49,"../startOfYear/index.js":186,"../toDate/index.js":197}],89:[function(require,module,exports){
+},{"../differenceInCalendarDays/index.js":50,"../startOfYear/index.js":187,"../toDate/index.js":198}],90:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5673,7 +5699,7 @@ function getDaysInMonth(dirtyDate, dirtyOptions) {
   return lastDayOfMonth.getDate();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],90:[function(require,module,exports){
+},{"../toDate/index.js":198}],91:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5725,7 +5751,7 @@ function getDaysInYear(dirtyDate, dirtyOptions) {
   return (0, _index4.default)(date, dirtyOptions) ? 366 : 365;
 }
 module.exports = exports['default'];
-},{"../isLeapYear/index.js":118,"../toDate/index.js":197}],91:[function(require,module,exports){
+},{"../isLeapYear/index.js":119,"../toDate/index.js":198}],92:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5770,7 +5796,7 @@ function getDecade(dirtyDate, dirtyOptions) {
   return decade;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],92:[function(require,module,exports){
+},{"../toDate/index.js":198}],93:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5814,7 +5840,7 @@ function getHours(dirtyDate, dirtyOptions) {
   return hours;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],93:[function(require,module,exports){
+},{"../toDate/index.js":198}],94:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5866,7 +5892,7 @@ function getISODay(dirtyDate, dirtyOptions) {
   return day;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],94:[function(require,module,exports){
+},{"../toDate/index.js":198}],95:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5926,7 +5952,7 @@ function getISOWeek(dirtyDate, dirtyOptions) {
   return Math.round(diff / MILLISECONDS_IN_WEEK) + 1;
 }
 module.exports = exports['default'];
-},{"../startOfISOWeek/index.js":178,"../startOfISOWeekYear/index.js":179,"../toDate/index.js":197}],95:[function(require,module,exports){
+},{"../startOfISOWeek/index.js":179,"../startOfISOWeekYear/index.js":180,"../toDate/index.js":198}],96:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -5994,7 +6020,7 @@ function getISOWeekYear(dirtyDate, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../startOfISOWeek/index.js":178,"../toDate/index.js":197}],96:[function(require,module,exports){
+},{"../startOfISOWeek/index.js":179,"../toDate/index.js":198}],97:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6050,7 +6076,7 @@ function getISOWeeksInYear(dirtyDate, dirtyOptions) {
   return Math.round(diff / MILLISECONDS_IN_WEEK);
 }
 module.exports = exports['default'];
-},{"../addWeeks/index.js":42,"../startOfISOWeekYear/index.js":179}],97:[function(require,module,exports){
+},{"../addWeeks/index.js":43,"../startOfISOWeekYear/index.js":180}],98:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6094,7 +6120,7 @@ function getMilliseconds(dirtyDate, dirtyOptions) {
   return milliseconds;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],98:[function(require,module,exports){
+},{"../toDate/index.js":198}],99:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6138,7 +6164,7 @@ function getMinutes(dirtyDate, dirtyOptions) {
   return minutes;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],99:[function(require,module,exports){
+},{"../toDate/index.js":198}],100:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6182,7 +6208,7 @@ function getMonth(dirtyDate, dirtyOptions) {
   return month;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],100:[function(require,module,exports){
+},{"../toDate/index.js":198}],101:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6264,7 +6290,7 @@ function getOverlappingDaysInIntervals(dirtyIntervalLeft, dirtyIntervalRight, di
   return Math.ceil(differenceInMs / MILLISECONDS_IN_DAY);
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],101:[function(require,module,exports){
+},{"../toDate/index.js":198}],102:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6308,7 +6334,7 @@ function getQuarter(dirtyDate, dirtyOptions) {
   return quarter;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],102:[function(require,module,exports){
+},{"../toDate/index.js":198}],103:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6352,7 +6378,7 @@ function getSeconds(dirtyDate, dirtyOptions) {
   return seconds;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],103:[function(require,module,exports){
+},{"../toDate/index.js":198}],104:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6396,7 +6422,7 @@ function getTime(dirtyDate, dirtyOptions) {
   return timestamp;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],104:[function(require,module,exports){
+},{"../toDate/index.js":198}],105:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6438,7 +6464,7 @@ function getUnixTime(dirtyDate, dirtyOptions) {
   return Math.floor((0, _index2.default)(dirtyDate, dirtyOptions) / 1000);
 }
 module.exports = exports['default'];
-},{"../getTime/index.js":103}],105:[function(require,module,exports){
+},{"../getTime/index.js":104}],106:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6513,7 +6539,7 @@ function getWeek(dirtyDate, dirtyOptions) {
   return Math.round(diff / MILLISECONDS_IN_WEEK) + 1;
 }
 module.exports = exports['default'];
-},{"../startOfWeek/index.js":184,"../startOfWeekYear/index.js":185,"../toDate/index.js":197}],106:[function(require,module,exports){
+},{"../startOfWeek/index.js":185,"../startOfWeekYear/index.js":186,"../toDate/index.js":198}],107:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6585,7 +6611,7 @@ function getWeekOfMonth(dirtyDate, dirtyOptions) {
   return Math.ceil(((0, _index4.default)(dirtyDate, dirtyOptions) + diff) / 7);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getDate/index.js":86,"../getDay/index.js":87,"../startOfMonth/index.js":181}],107:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getDate/index.js":87,"../getDay/index.js":88,"../startOfMonth/index.js":182}],108:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6685,7 +6711,7 @@ function getWeekYear(dirtyDate, dirtyOptions) {
   }
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../startOfWeek/index.js":184,"../toDate/index.js":197}],108:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../startOfWeek/index.js":185,"../toDate/index.js":198}],109:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6749,7 +6775,7 @@ function getWeeksInMonth(dirtyDate, dirtyOptions) {
   return (0, _index2.default)((0, _index4.default)(dirtyDate, dirtyOptions), (0, _index6.default)(dirtyDate, dirtyOptions), dirtyOptions) + 1;
 }
 module.exports = exports['default'];
-},{"../differenceInCalendarWeeks/index.js":54,"../lastDayOfMonth/index.js":141,"../startOfMonth/index.js":181}],109:[function(require,module,exports){
+},{"../differenceInCalendarWeeks/index.js":55,"../lastDayOfMonth/index.js":142,"../startOfMonth/index.js":182}],110:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6793,7 +6819,7 @@ function getYear(dirtyDate, dirtyOptions) {
   return year;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],110:[function(require,module,exports){
+},{"../toDate/index.js":198}],111:[function(require,module,exports){
 'use strict';
 
 // This file is generated automatically by `scripts/build/indices.js`. Please, don't change it.
@@ -6950,7 +6976,7 @@ module.exports = {
   subYears: require('./subYears/index.js'),
   toDate: require('./toDate/index.js')
 };
-},{"./addDays/index.js":34,"./addHours/index.js":35,"./addISOWeekYears/index.js":36,"./addMilliseconds/index.js":37,"./addMinutes/index.js":38,"./addMonths/index.js":39,"./addQuarters/index.js":40,"./addSeconds/index.js":41,"./addWeeks/index.js":42,"./addYears/index.js":43,"./areIntervalsOverlapping/index.js":44,"./closestIndexTo/index.js":45,"./closestTo/index.js":46,"./compareAsc/index.js":47,"./compareDesc/index.js":48,"./differenceInCalendarDays/index.js":49,"./differenceInCalendarISOWeekYears/index.js":50,"./differenceInCalendarISOWeeks/index.js":51,"./differenceInCalendarMonths/index.js":52,"./differenceInCalendarQuarters/index.js":53,"./differenceInCalendarWeeks/index.js":54,"./differenceInCalendarYears/index.js":55,"./differenceInDays/index.js":56,"./differenceInHours/index.js":57,"./differenceInISOWeekYears/index.js":58,"./differenceInMilliseconds/index.js":59,"./differenceInMinutes/index.js":60,"./differenceInMonths/index.js":61,"./differenceInQuarters/index.js":62,"./differenceInSeconds/index.js":63,"./differenceInWeeks/index.js":64,"./differenceInYears/index.js":65,"./eachDayOfInterval/index.js":66,"./eachWeekOfInterval/index.js":67,"./endOfDay/index.js":68,"./endOfDecade/index.js":69,"./endOfHour/index.js":70,"./endOfISOWeek/index.js":71,"./endOfISOWeekYear/index.js":72,"./endOfMinute/index.js":73,"./endOfMonth/index.js":74,"./endOfQuarter/index.js":75,"./endOfSecond/index.js":76,"./endOfWeek/index.js":77,"./endOfYear/index.js":78,"./format/index.js":81,"./formatDistance/index.js":82,"./formatDistanceStrict/index.js":83,"./formatRelative/index.js":84,"./fromUnixTime/index.js":85,"./getDate/index.js":86,"./getDay/index.js":87,"./getDayOfYear/index.js":88,"./getDaysInMonth/index.js":89,"./getDaysInYear/index.js":90,"./getDecade/index.js":91,"./getHours/index.js":92,"./getISODay/index.js":93,"./getISOWeek/index.js":94,"./getISOWeekYear/index.js":95,"./getISOWeeksInYear/index.js":96,"./getMilliseconds/index.js":97,"./getMinutes/index.js":98,"./getMonth/index.js":99,"./getOverlappingDaysInIntervals/index.js":100,"./getQuarter/index.js":101,"./getSeconds/index.js":102,"./getTime/index.js":103,"./getUnixTime/index.js":104,"./getWeek/index.js":105,"./getWeekOfMonth/index.js":106,"./getWeekYear/index.js":107,"./getWeeksInMonth/index.js":108,"./getYear/index.js":109,"./isAfter/index.js":111,"./isBefore/index.js":112,"./isDate/index.js":113,"./isEqual/index.js":114,"./isFirstDayOfMonth/index.js":115,"./isFriday/index.js":116,"./isLastDayOfMonth/index.js":117,"./isLeapYear/index.js":118,"./isMonday/index.js":119,"./isSameDay/index.js":120,"./isSameHour/index.js":121,"./isSameISOWeek/index.js":122,"./isSameISOWeekYear/index.js":123,"./isSameMinute/index.js":124,"./isSameMonth/index.js":125,"./isSameQuarter/index.js":126,"./isSameSecond/index.js":127,"./isSameWeek/index.js":128,"./isSameYear/index.js":129,"./isSaturday/index.js":130,"./isSunday/index.js":131,"./isThursday/index.js":132,"./isTuesday/index.js":133,"./isValid/index.js":134,"./isWednesday/index.js":135,"./isWeekend/index.js":136,"./isWithinInterval/index.js":137,"./lastDayOfDecade/index.js":138,"./lastDayOfISOWeek/index.js":139,"./lastDayOfISOWeekYear/index.js":140,"./lastDayOfMonth/index.js":141,"./lastDayOfQuarter/index.js":142,"./lastDayOfWeek/index.js":143,"./lastDayOfYear/index.js":144,"./max/index.js":155,"./min/index.js":156,"./parse/index.js":158,"./roundToNearestMinutes/index.js":159,"./setDate/index.js":160,"./setDay/index.js":161,"./setDayOfYear/index.js":162,"./setHours/index.js":163,"./setISODay/index.js":164,"./setISOWeek/index.js":165,"./setISOWeekYear/index.js":166,"./setMilliseconds/index.js":167,"./setMinutes/index.js":168,"./setMonth/index.js":169,"./setQuarter/index.js":170,"./setSeconds/index.js":171,"./setWeek/index.js":172,"./setWeekYear/index.js":173,"./setYear/index.js":174,"./startOfDay/index.js":175,"./startOfDecade/index.js":176,"./startOfHour/index.js":177,"./startOfISOWeek/index.js":178,"./startOfISOWeekYear/index.js":179,"./startOfMinute/index.js":180,"./startOfMonth/index.js":181,"./startOfQuarter/index.js":182,"./startOfSecond/index.js":183,"./startOfWeek/index.js":184,"./startOfWeekYear/index.js":185,"./startOfYear/index.js":186,"./subDays/index.js":187,"./subHours/index.js":188,"./subISOWeekYears/index.js":189,"./subMilliseconds/index.js":190,"./subMinutes/index.js":191,"./subMonths/index.js":192,"./subQuarters/index.js":193,"./subSeconds/index.js":194,"./subWeeks/index.js":195,"./subYears/index.js":196,"./toDate/index.js":197}],111:[function(require,module,exports){
+},{"./addDays/index.js":35,"./addHours/index.js":36,"./addISOWeekYears/index.js":37,"./addMilliseconds/index.js":38,"./addMinutes/index.js":39,"./addMonths/index.js":40,"./addQuarters/index.js":41,"./addSeconds/index.js":42,"./addWeeks/index.js":43,"./addYears/index.js":44,"./areIntervalsOverlapping/index.js":45,"./closestIndexTo/index.js":46,"./closestTo/index.js":47,"./compareAsc/index.js":48,"./compareDesc/index.js":49,"./differenceInCalendarDays/index.js":50,"./differenceInCalendarISOWeekYears/index.js":51,"./differenceInCalendarISOWeeks/index.js":52,"./differenceInCalendarMonths/index.js":53,"./differenceInCalendarQuarters/index.js":54,"./differenceInCalendarWeeks/index.js":55,"./differenceInCalendarYears/index.js":56,"./differenceInDays/index.js":57,"./differenceInHours/index.js":58,"./differenceInISOWeekYears/index.js":59,"./differenceInMilliseconds/index.js":60,"./differenceInMinutes/index.js":61,"./differenceInMonths/index.js":62,"./differenceInQuarters/index.js":63,"./differenceInSeconds/index.js":64,"./differenceInWeeks/index.js":65,"./differenceInYears/index.js":66,"./eachDayOfInterval/index.js":67,"./eachWeekOfInterval/index.js":68,"./endOfDay/index.js":69,"./endOfDecade/index.js":70,"./endOfHour/index.js":71,"./endOfISOWeek/index.js":72,"./endOfISOWeekYear/index.js":73,"./endOfMinute/index.js":74,"./endOfMonth/index.js":75,"./endOfQuarter/index.js":76,"./endOfSecond/index.js":77,"./endOfWeek/index.js":78,"./endOfYear/index.js":79,"./format/index.js":82,"./formatDistance/index.js":83,"./formatDistanceStrict/index.js":84,"./formatRelative/index.js":85,"./fromUnixTime/index.js":86,"./getDate/index.js":87,"./getDay/index.js":88,"./getDayOfYear/index.js":89,"./getDaysInMonth/index.js":90,"./getDaysInYear/index.js":91,"./getDecade/index.js":92,"./getHours/index.js":93,"./getISODay/index.js":94,"./getISOWeek/index.js":95,"./getISOWeekYear/index.js":96,"./getISOWeeksInYear/index.js":97,"./getMilliseconds/index.js":98,"./getMinutes/index.js":99,"./getMonth/index.js":100,"./getOverlappingDaysInIntervals/index.js":101,"./getQuarter/index.js":102,"./getSeconds/index.js":103,"./getTime/index.js":104,"./getUnixTime/index.js":105,"./getWeek/index.js":106,"./getWeekOfMonth/index.js":107,"./getWeekYear/index.js":108,"./getWeeksInMonth/index.js":109,"./getYear/index.js":110,"./isAfter/index.js":112,"./isBefore/index.js":113,"./isDate/index.js":114,"./isEqual/index.js":115,"./isFirstDayOfMonth/index.js":116,"./isFriday/index.js":117,"./isLastDayOfMonth/index.js":118,"./isLeapYear/index.js":119,"./isMonday/index.js":120,"./isSameDay/index.js":121,"./isSameHour/index.js":122,"./isSameISOWeek/index.js":123,"./isSameISOWeekYear/index.js":124,"./isSameMinute/index.js":125,"./isSameMonth/index.js":126,"./isSameQuarter/index.js":127,"./isSameSecond/index.js":128,"./isSameWeek/index.js":129,"./isSameYear/index.js":130,"./isSaturday/index.js":131,"./isSunday/index.js":132,"./isThursday/index.js":133,"./isTuesday/index.js":134,"./isValid/index.js":135,"./isWednesday/index.js":136,"./isWeekend/index.js":137,"./isWithinInterval/index.js":138,"./lastDayOfDecade/index.js":139,"./lastDayOfISOWeek/index.js":140,"./lastDayOfISOWeekYear/index.js":141,"./lastDayOfMonth/index.js":142,"./lastDayOfQuarter/index.js":143,"./lastDayOfWeek/index.js":144,"./lastDayOfYear/index.js":145,"./max/index.js":156,"./min/index.js":157,"./parse/index.js":159,"./roundToNearestMinutes/index.js":160,"./setDate/index.js":161,"./setDay/index.js":162,"./setDayOfYear/index.js":163,"./setHours/index.js":164,"./setISODay/index.js":165,"./setISOWeek/index.js":166,"./setISOWeekYear/index.js":167,"./setMilliseconds/index.js":168,"./setMinutes/index.js":169,"./setMonth/index.js":170,"./setQuarter/index.js":171,"./setSeconds/index.js":172,"./setWeek/index.js":173,"./setWeekYear/index.js":174,"./setYear/index.js":175,"./startOfDay/index.js":176,"./startOfDecade/index.js":177,"./startOfHour/index.js":178,"./startOfISOWeek/index.js":179,"./startOfISOWeekYear/index.js":180,"./startOfMinute/index.js":181,"./startOfMonth/index.js":182,"./startOfQuarter/index.js":183,"./startOfSecond/index.js":184,"./startOfWeek/index.js":185,"./startOfWeekYear/index.js":186,"./startOfYear/index.js":187,"./subDays/index.js":188,"./subHours/index.js":189,"./subISOWeekYears/index.js":190,"./subMilliseconds/index.js":191,"./subMinutes/index.js":192,"./subMonths/index.js":193,"./subQuarters/index.js":194,"./subSeconds/index.js":195,"./subWeeks/index.js":196,"./subYears/index.js":197,"./toDate/index.js":198}],112:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -6995,7 +7021,7 @@ function isAfter(dirtyDate, dirtyDateToCompare, dirtyOptions) {
   return date.getTime() > dateToCompare.getTime();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],112:[function(require,module,exports){
+},{"../toDate/index.js":198}],113:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7040,7 +7066,7 @@ function isBefore(dirtyDate, dirtyDateToCompare, dirtyOptions) {
   return date.getTime() < dateToCompare.getTime();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],113:[function(require,module,exports){
+},{"../toDate/index.js":198}],114:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7091,7 +7117,7 @@ function isDate(value) {
   return value instanceof Date || (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' && Object.prototype.toString.call(value) === '[object Date]';
 }
 module.exports = exports['default'];
-},{}],114:[function(require,module,exports){
+},{}],115:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7139,7 +7165,7 @@ function isEqual(dirtyLeftDate, dirtyRightDate, dirtyOptions) {
   return dateLeft.getTime() === dateRight.getTime();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],115:[function(require,module,exports){
+},{"../toDate/index.js":198}],116:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7181,7 +7207,7 @@ function isFirstDayOfMonth(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDate() === 1;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],116:[function(require,module,exports){
+},{"../toDate/index.js":198}],117:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7223,7 +7249,7 @@ function isFriday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 5;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],117:[function(require,module,exports){
+},{"../toDate/index.js":198}],118:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7274,7 +7300,7 @@ function isLastDayOfMonth(dirtyDate, dirtyOptions) {
   return (0, _index4.default)(date, dirtyOptions).getTime() === (0, _index6.default)(date, dirtyOptions).getTime();
 }
 module.exports = exports['default'];
-},{"../endOfDay/index.js":68,"../endOfMonth/index.js":74,"../toDate/index.js":197}],118:[function(require,module,exports){
+},{"../endOfDay/index.js":69,"../endOfMonth/index.js":75,"../toDate/index.js":198}],119:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7318,7 +7344,7 @@ function isLeapYear(dirtyDate, dirtyOptions) {
   return year % 400 === 0 || year % 4 === 0 && year % 100 !== 0;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],119:[function(require,module,exports){
+},{"../toDate/index.js":198}],120:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7360,7 +7386,7 @@ function isMonday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 1;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],120:[function(require,module,exports){
+},{"../toDate/index.js":198}],121:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7409,7 +7435,7 @@ function isSameDay(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfDay.getTime() === dateRightStartOfDay.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfDay/index.js":175}],121:[function(require,module,exports){
+},{"../startOfDay/index.js":176}],122:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7458,7 +7484,7 @@ function isSameHour(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfHour.getTime() === dateRightStartOfHour.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfHour/index.js":177}],122:[function(require,module,exports){
+},{"../startOfHour/index.js":178}],123:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7512,7 +7538,7 @@ function isSameISOWeek(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return (0, _index2.default)(dirtyDateLeft, dirtyDateRight, isSameWeekOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/cloneObject/index.js":17,"../isSameWeek/index.js":128}],123:[function(require,module,exports){
+},{"../_lib/cloneObject/index.js":18,"../isSameWeek/index.js":129}],124:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7563,7 +7589,7 @@ function isSameISOWeekYear(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfYear.getTime() === dateRightStartOfYear.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfISOWeekYear/index.js":179}],124:[function(require,module,exports){
+},{"../startOfISOWeekYear/index.js":180}],125:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7613,7 +7639,7 @@ function isSameMinute(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfMinute.getTime() === dateRightStartOfMinute.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfMinute/index.js":180}],125:[function(require,module,exports){
+},{"../startOfMinute/index.js":181}],126:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7661,7 +7687,7 @@ function isSameMonth(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeft.getFullYear() === dateRight.getFullYear() && dateLeft.getMonth() === dateRight.getMonth();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],126:[function(require,module,exports){
+},{"../toDate/index.js":198}],127:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7710,7 +7736,7 @@ function isSameQuarter(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfQuarter.getTime() === dateRightStartOfQuarter.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfQuarter/index.js":182}],127:[function(require,module,exports){
+},{"../startOfQuarter/index.js":183}],128:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7760,7 +7786,7 @@ function isSameSecond(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfSecond.getTime() === dateRightStartOfSecond.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfSecond/index.js":183}],128:[function(require,module,exports){
+},{"../startOfSecond/index.js":184}],129:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7822,7 +7848,7 @@ function isSameWeek(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeftStartOfWeek.getTime() === dateRightStartOfWeek.getTime();
 }
 module.exports = exports['default'];
-},{"../startOfWeek/index.js":184}],129:[function(require,module,exports){
+},{"../startOfWeek/index.js":185}],130:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7870,7 +7896,7 @@ function isSameYear(dirtyDateLeft, dirtyDateRight, dirtyOptions) {
   return dateLeft.getFullYear() === dateRight.getFullYear();
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],130:[function(require,module,exports){
+},{"../toDate/index.js":198}],131:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7912,7 +7938,7 @@ function isSaturday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 6;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],131:[function(require,module,exports){
+},{"../toDate/index.js":198}],132:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7954,7 +7980,7 @@ function isSunday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 0;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],132:[function(require,module,exports){
+},{"../toDate/index.js":198}],133:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -7996,7 +8022,7 @@ function isThursday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 4;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],133:[function(require,module,exports){
+},{"../toDate/index.js":198}],134:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8038,7 +8064,7 @@ function isTuesday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 2;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],134:[function(require,module,exports){
+},{"../toDate/index.js":198}],135:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8095,7 +8121,7 @@ function isValid(dirtyDate, dirtyOptions) {
   return !isNaN(date);
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],135:[function(require,module,exports){
+},{"../toDate/index.js":198}],136:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8137,7 +8163,7 @@ function isWednesday(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, dirtyOptions).getDay() === 3;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],136:[function(require,module,exports){
+},{"../toDate/index.js":198}],137:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8181,7 +8207,7 @@ function isWeekend(dirtyDate, dirtyOptions) {
   return day === 0 || day === 6;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],137:[function(require,module,exports){
+},{"../toDate/index.js":198}],138:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8247,7 +8273,7 @@ function isWithinInterval(dirtyDate, dirtyInterval, dirtyOptions) {
   return time >= startTime && time <= endTime;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],138:[function(require,module,exports){
+},{"../toDate/index.js":198}],139:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8294,7 +8320,7 @@ function lastDayOfDecade(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],139:[function(require,module,exports){
+},{"../toDate/index.js":198}],140:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8345,7 +8371,7 @@ function lastDayOfISOWeek(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, lastDayOfWeekOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/cloneObject/index.js":17,"../lastDayOfWeek/index.js":143}],140:[function(require,module,exports){
+},{"../_lib/cloneObject/index.js":18,"../lastDayOfWeek/index.js":144}],141:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8401,7 +8427,7 @@ function lastDayOfISOWeekYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../getISOWeekYear/index.js":95,"../startOfISOWeek/index.js":178}],141:[function(require,module,exports){
+},{"../getISOWeekYear/index.js":96,"../startOfISOWeek/index.js":179}],142:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8448,7 +8474,7 @@ function lastDayOfMonth(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],142:[function(require,module,exports){
+},{"../toDate/index.js":198}],143:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8496,7 +8522,7 @@ function lastDayOfQuarter(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],143:[function(require,module,exports){
+},{"../toDate/index.js":198}],144:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8568,7 +8594,7 @@ function lastDayOfWeek(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],144:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],145:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8615,7 +8641,7 @@ function lastDayOfYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],145:[function(require,module,exports){
+},{"../toDate/index.js":198}],146:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8631,7 +8657,7 @@ function buildFormatLongFn(args) {
   };
 }
 module.exports = exports["default"];
-},{}],146:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8655,7 +8681,7 @@ function buildLocalizeFn(args) {
   };
 }
 module.exports = exports['default'];
-},{}],147:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8707,7 +8733,7 @@ function findKey(object, predicate) {
   }
 }
 module.exports = exports['default'];
-},{}],148:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8739,7 +8765,7 @@ function buildMatchPatternFn(args) {
   };
 }
 module.exports = exports["default"];
-},{}],149:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8838,7 +8864,7 @@ function formatDistance(token, count, options) {
   return result;
 }
 module.exports = exports['default'];
-},{}],150:[function(require,module,exports){
+},{}],151:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -8891,7 +8917,7 @@ var formatLong = {
 
 exports.default = formatLong;
 module.exports = exports['default'];
-},{"../../../_lib/buildFormatLongFn/index.js":145}],151:[function(require,module,exports){
+},{"../../../_lib/buildFormatLongFn/index.js":146}],152:[function(require,module,exports){
 "use strict";
 
 Object.defineProperty(exports, "__esModule", {
@@ -8911,7 +8937,7 @@ function formatRelative(token, date, baseDate, options) {
   return formatRelativeLocale[token];
 }
 module.exports = exports["default"];
-},{}],152:[function(require,module,exports){
+},{}],153:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9081,7 +9107,7 @@ var localize = {
 
 exports.default = localize;
 module.exports = exports['default'];
-},{"../../../_lib/buildLocalizeFn/index.js":146}],153:[function(require,module,exports){
+},{"../../../_lib/buildLocalizeFn/index.js":147}],154:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9207,7 +9233,7 @@ var match = {
 
 exports.default = match;
 module.exports = exports['default'];
-},{"../../../_lib/buildMatchFn/index.js":147,"../../../_lib/buildMatchPatternFn/index.js":148}],154:[function(require,module,exports){
+},{"../../../_lib/buildMatchFn/index.js":148,"../../../_lib/buildMatchPatternFn/index.js":149}],155:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9259,7 +9285,7 @@ var locale = {
 
 exports.default = locale;
 module.exports = exports['default'];
-},{"./_lib/formatDistance/index.js":149,"./_lib/formatLong/index.js":150,"./_lib/formatRelative/index.js":151,"./_lib/localize/index.js":152,"./_lib/match/index.js":153}],155:[function(require,module,exports){
+},{"./_lib/formatDistance/index.js":150,"./_lib/formatLong/index.js":151,"./_lib/formatRelative/index.js":152,"./_lib/localize/index.js":153,"./_lib/match/index.js":154}],156:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9331,7 +9357,7 @@ function max(dirtyDatesArray, dirtyOptions) {
   return result;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],156:[function(require,module,exports){
+},{"../toDate/index.js":198}],157:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -9403,7 +9429,7 @@ function min(dirtyDatesArray, dirtyOptions) {
   return result;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],157:[function(require,module,exports){
+},{"../toDate/index.js":198}],158:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10505,7 +10531,7 @@ var parsers = {
 
 exports.default = parsers;
 module.exports = exports['default'];
-},{"../../../_lib/getUTCWeekYear/index.js":23,"../../../_lib/setUTCDay/index.js":25,"../../../_lib/setUTCISODay/index.js":26,"../../../_lib/setUTCISOWeek/index.js":27,"../../../_lib/setUTCWeek/index.js":28,"../../../_lib/startOfUTCISOWeek/index.js":29,"../../../_lib/startOfUTCWeek/index.js":31}],158:[function(require,module,exports){
+},{"../../../_lib/getUTCWeekYear/index.js":24,"../../../_lib/setUTCDay/index.js":26,"../../../_lib/setUTCISODay/index.js":27,"../../../_lib/setUTCISOWeek/index.js":28,"../../../_lib/setUTCWeek/index.js":29,"../../../_lib/startOfUTCISOWeek/index.js":30,"../../../_lib/startOfUTCWeek/index.js":32}],159:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -10987,7 +11013,7 @@ function cleanEscapedString(input) {
   return input.match(escapedStringRegExp)[1].replace(doubleQuoteRegExp, "'");
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../_lib/protectedTokens/index.js":24,"../_lib/toInteger/index.js":33,"../locale/en-US/index.js":154,"../subMilliseconds/index.js":190,"../toDate/index.js":197,"./_lib/parsers/index.js":157}],159:[function(require,module,exports){
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../_lib/protectedTokens/index.js":25,"../_lib/toInteger/index.js":34,"../locale/en-US/index.js":155,"../subMilliseconds/index.js":191,"../toDate/index.js":198,"./_lib/parsers/index.js":158}],160:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11052,7 +11078,7 @@ function roundToNearestMinutes(dirtyDate, dirtyNearestTo, dirtyOptions) {
   return new Date(date.getFullYear(), date.getMonth(), date.getDate(), date.getHours(), roundedMinutes + addedMinutes);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],160:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],161:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11102,7 +11128,7 @@ function setDate(dirtyDate, dirtyDayOfMonth, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],161:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],162:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11180,7 +11206,7 @@ function setDay(dirtyDate, dirtyDay, dirtyOptions) {
   return (0, _index6.default)(date, diff, options);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addDays/index.js":34,"../toDate/index.js":197}],162:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addDays/index.js":35,"../toDate/index.js":198}],163:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11231,7 +11257,7 @@ function setDayOfYear(dirtyDate, dirtyDayOfYear, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],163:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],164:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11281,7 +11307,7 @@ function setHours(dirtyDate, dirtyHours, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],164:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],165:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11342,7 +11368,7 @@ function setISODay(dirtyDate, dirtyDay, dirtyOptions) {
   return (0, _index6.default)(date, diff, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addDays/index.js":34,"../getISODay/index.js":93,"../toDate/index.js":197}],165:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addDays/index.js":35,"../getISODay/index.js":94,"../toDate/index.js":198}],166:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11399,7 +11425,7 @@ function setISOWeek(dirtyDate, dirtyISOWeek, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getISOWeek/index.js":94,"../toDate/index.js":197}],166:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getISOWeek/index.js":95,"../toDate/index.js":198}],167:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11465,7 +11491,7 @@ function setISOWeekYear(dirtyDate, dirtyISOWeekYear, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../differenceInCalendarDays/index.js":49,"../startOfISOWeekYear/index.js":179,"../toDate/index.js":197}],167:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../differenceInCalendarDays/index.js":50,"../startOfISOWeekYear/index.js":180,"../toDate/index.js":198}],168:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11515,7 +11541,7 @@ function setMilliseconds(dirtyDate, dirtyMilliseconds, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],168:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],169:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11565,7 +11591,7 @@ function setMinutes(dirtyDate, dirtyMinutes, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],169:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],170:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11628,7 +11654,7 @@ function setMonth(dirtyDate, dirtyMonth, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getDaysInMonth/index.js":89,"../toDate/index.js":197}],170:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getDaysInMonth/index.js":90,"../toDate/index.js":198}],171:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11683,7 +11709,7 @@ function setQuarter(dirtyDate, dirtyQuarter, dirtyOptions) {
   return (0, _index6.default)(date, date.getMonth() + diff * 3, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../setMonth/index.js":169,"../toDate/index.js":197}],171:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../setMonth/index.js":170,"../toDate/index.js":198}],172:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11733,7 +11759,7 @@ function setSeconds(dirtyDate, dirtySeconds, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],172:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],173:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11805,7 +11831,7 @@ function setWeek(dirtyDate, dirtyWeek, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getWeek/index.js":105,"../toDate/index.js":197}],173:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getWeek/index.js":106,"../toDate/index.js":198}],174:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11892,7 +11918,7 @@ function setWeekYear(dirtyDate, dirtyWeekYear, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../differenceInCalendarDays/index.js":49,"../startOfWeekYear/index.js":185,"../toDate/index.js":197}],174:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../differenceInCalendarDays/index.js":50,"../startOfWeekYear/index.js":186,"../toDate/index.js":198}],175:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11948,7 +11974,7 @@ function setYear(dirtyDate, dirtyYear, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],175:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],176:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -11993,7 +12019,7 @@ function startOfDay(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],176:[function(require,module,exports){
+},{"../toDate/index.js":198}],177:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12039,7 +12065,7 @@ function startOfDecade(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],177:[function(require,module,exports){
+},{"../toDate/index.js":198}],178:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12084,7 +12110,7 @@ function startOfHour(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],178:[function(require,module,exports){
+},{"../toDate/index.js":198}],179:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12135,7 +12161,7 @@ function startOfISOWeek(dirtyDate, dirtyOptions) {
   return (0, _index2.default)(dirtyDate, startOfWeekOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/cloneObject/index.js":17,"../startOfWeek/index.js":184}],179:[function(require,module,exports){
+},{"../_lib/cloneObject/index.js":18,"../startOfWeek/index.js":185}],180:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12190,7 +12216,7 @@ function startOfISOWeekYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../getISOWeekYear/index.js":95,"../startOfISOWeek/index.js":178}],180:[function(require,module,exports){
+},{"../getISOWeekYear/index.js":96,"../startOfISOWeek/index.js":179}],181:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12235,7 +12261,7 @@ function startOfMinute(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],181:[function(require,module,exports){
+},{"../toDate/index.js":198}],182:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12281,7 +12307,7 @@ function startOfMonth(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],182:[function(require,module,exports){
+},{"../toDate/index.js":198}],183:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12329,7 +12355,7 @@ function startOfQuarter(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],183:[function(require,module,exports){
+},{"../toDate/index.js":198}],184:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12374,7 +12400,7 @@ function startOfSecond(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],184:[function(require,module,exports){
+},{"../toDate/index.js":198}],185:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12446,7 +12472,7 @@ function startOfWeek(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../toDate/index.js":197}],185:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../toDate/index.js":198}],186:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12524,7 +12550,7 @@ function startOfWeekYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../getWeekYear/index.js":107,"../startOfWeek/index.js":184}],186:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../getWeekYear/index.js":108,"../startOfWeek/index.js":185}],187:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12571,7 +12597,7 @@ function startOfYear(dirtyDate, dirtyOptions) {
   return date;
 }
 module.exports = exports['default'];
-},{"../toDate/index.js":197}],187:[function(require,module,exports){
+},{"../toDate/index.js":198}],188:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12619,7 +12645,7 @@ function subDays(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addDays/index.js":34}],188:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addDays/index.js":35}],189:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12667,7 +12693,7 @@ function subHours(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addHours/index.js":35}],189:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addHours/index.js":36}],190:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12717,7 +12743,7 @@ function subISOWeekYears(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addISOWeekYears/index.js":36}],190:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addISOWeekYears/index.js":37}],191:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12765,7 +12791,7 @@ function subMilliseconds(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMilliseconds/index.js":37}],191:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMilliseconds/index.js":38}],192:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12813,7 +12839,7 @@ function subMinutes(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMinutes/index.js":38}],192:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMinutes/index.js":39}],193:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12861,7 +12887,7 @@ function subMonths(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addMonths/index.js":39}],193:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addMonths/index.js":40}],194:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12909,7 +12935,7 @@ function subQuarters(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addQuarters/index.js":40}],194:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addQuarters/index.js":41}],195:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -12957,7 +12983,7 @@ function subSeconds(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addSeconds/index.js":41}],195:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addSeconds/index.js":42}],196:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13005,7 +13031,7 @@ function subWeeks(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addWeeks/index.js":42}],196:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addWeeks/index.js":43}],197:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13053,7 +13079,7 @@ function subYears(dirtyDate, dirtyAmount, dirtyOptions) {
   return (0, _index4.default)(dirtyDate, -amount, dirtyOptions);
 }
 module.exports = exports['default'];
-},{"../_lib/toInteger/index.js":33,"../addYears/index.js":43}],197:[function(require,module,exports){
+},{"../_lib/toInteger/index.js":34,"../addYears/index.js":44}],198:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -13557,4 +13583,4 @@ function validateTimezone(hours, minutes) {
   return true;
 }
 module.exports = exports['default'];
-},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":18,"../_lib/toInteger/index.js":33}]},{},[1]);
+},{"../_lib/getTimezoneOffsetInMilliseconds/index.js":19,"../_lib/toInteger/index.js":34}]},{},[1]);
