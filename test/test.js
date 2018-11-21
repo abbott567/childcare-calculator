@@ -17,4 +17,5 @@ describe('--formatting functions', () => {
 
 describe('--validation', () => {
   require('./unit-tests/browser/validation/validate.dateOfBirth');
+  require('./unit-tests/browser/validation/validate.freeChildcare');
 });
