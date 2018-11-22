@@ -133,6 +133,7 @@ module.exports = {getPrettyDays, getPrettyAge, getPrettyCost};
 },{}],6:[function(require,module,exports){
 function scrollToTop() {
   $('html,body').animate({scrollTop: 0}, 0);
+  $('.ymca-error-summary:first').focus();
 }
 
 module.exports = {scrollToTop};
@@ -165,7 +166,7 @@ $(document).on('click', '#fulltime-no', () => {
 },{}],8:[function(require,module,exports){
 function appendErrors(errors) {
   $('main').prepend(`
-    <div class="ymca-error-summary">
+    <div class="ymca-error-summary" tabindex="-1" role="alert">
       <h2>Theres been a problem</h2>
       <p>Check the following:</p>
       <ul id="error-summary"></ul>
@@ -179,12 +180,13 @@ function appendErrors(errors) {
     );
     const $formGroup = $(document).find('#' + error.id);
     const $legend = $formGroup.find('legend:first');
-
     $legend.append(`
       <span class="ymca-error-label">${error.label}</span>
     `);
     $formGroup.addClass('ymca-error');
   });
+  const titleText = $('title').text();
+  $('title').text('Error: ' + titleText);
 }
 
 module.exports = {appendErrors};
@@ -198,6 +200,8 @@ function clearErrors() {
     $(this).closest('.ymca-error').removeClass('ymca-error');
     $(this).remove();
   });
+  const titleText = $('title').text().replace('Error: ', '');
+  $('title').text(titleText);
 }
 
 module.exports = {clearErrors};

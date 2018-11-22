@@ -6,6 +6,8 @@ function clearErrors() {
     $(this).closest('.ymca-error').removeClass('ymca-error');
     $(this).remove();
   });
+  const titleText = $('title').text().replace('Error: ', '');
+  $('title').text(titleText);
 }
 
 module.exports = {clearErrors};
