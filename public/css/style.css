@@ -36,6 +36,11 @@ a:focus {
 }
 
 .ymca-error {
+  border-left: 5px solid #cc0000;
+  padding-left: 10px;
+}
+
+.ymca-error-label {
   display: block;
   color: #cc0000;
 }
