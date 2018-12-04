@@ -6,6 +6,7 @@ function hideHidden() {
 
 $(document).ready(() => {
   hideHidden();
+  $('#unhide-with-js').show();
 });
 
 $(document).on('click', '#freeChildcare-yes', () => {

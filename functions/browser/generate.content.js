@@ -10,19 +10,34 @@ function generateContent(data) {
   const costPerHalfDay = getCostPerHalfDay(data.age);
   const costOfFreeHours = getCostForFreeHours(data.freeChildcareAmount, data.age);
 
-  const prettyAge = getPrettyAge(data.age);
-  const prettyDays = getPrettyDays(data.days);
-  const prettyCostPerWeek = getPrettyCost(costPerWeek);
-  const prettyCostPerDay = getPrettyCost(costPerDay);
-  const prettyCostPerHalfDay = getPrettyCost(costPerHalfDay);
-  const prettyCostChidcare = getPrettyCost(costOfFreeHours);
-
-  return {
-    p1: `Your childcare will cost ${prettyCostPerWeek} per week`,
-    p2: `Childcare for a ${prettyAge} is ${prettyCostPerDay} for a full day and ${prettyCostPerHalfDay} for a half day.`,
-    p3: `You told us you need ${prettyDays}.`,
-    sum: `${prettyCostPerWeek} - ${prettyCostChidcare}`
+  const prettyData = {
+    numberOfFreeHours: data.freeChildcareAmount,
+    age: getPrettyAge(data.age),
+    days: getPrettyDays(data.days),
+    costPerWeek: getPrettyCost(costPerWeek),
+    costPerDay: getPrettyCost(costPerDay),
+    costPerHalfDay: getPrettyCost(costPerHalfDay),
+    discount: getPrettyCost(costOfFreeHours)
   };
+  prettyData.sum = generateSum(data, prettyData);
+  return prettyData;
+}
+
+function generateSum(data, prettyData) {
+  const sum = {
+    total: prettyData.costPerWeek,
+    days: [],
+    discount: prettyData.discount
+  };
+  for (let i = 0; i < data.days.length; i++) {
+    if (data.days[i] === 'full') {
+      sum.days.push(prettyData.costPerDay);
+    }
+    if (data.days[i] === 'half') {
+      sum.days.push(prettyData.costPerHalfDay);
+    }
+  }
+  return sum;
 }
 
 module.exports = {generateContent};

@@ -13,6 +13,14 @@ a {
   color: #A90B76;
 }
 
+#calculateChildcare {
+  margin-bottom: 30px;
+}
+
+fieldset {
+  border: none;
+}
+
 input[type=number]::-webkit-inner-spin-button, 
 input[type=number]::-webkit-outer-spin-button { 
   -webkit-appearance: none; 
@@ -25,9 +33,17 @@ a:focus {
   outline-offset: 0;
 }
 
+#ymca-results {
+  display: none;
+}
+.ymca-text {
+  max-width: 66.66%;
+}
+
 .ymca-error-summary {
   border: 5px solid #cc0000;
   padding: 20px;
+  margin-bottom: 30px;
 }
 
 .ymca-error-summary a {
@@ -41,6 +57,7 @@ a:focus {
 }
 
 .ymca-error-label {
+  font-size: .7em;
   display: block;
   color: #cc0000;
 }
@@ -56,15 +73,19 @@ a:focus {
   display: block;
   color: #6F777B;
   font-weight: normal;
+  font-size: .7em;
 }
 
 .ymca-body {
   font-size: 19px;
   font-weight: normal;
 }
+
 .ymca-legend {
+  font-size: 1.4em;
   font-weight: bold;
   margin-bottom: 10px;
+  color: #333;
 }
 
 .ymca-form-group {
@@ -79,7 +100,7 @@ a:focus {
 }
 
 .ymca-input-field {
-  border: 2px solid #000;
+  border: 2px solid #000 !important;
   padding: 10px;
 }
 
@@ -94,12 +115,12 @@ a:focus {
 
 .ymca-date__day input,
 .ymca-date__month input {
-  max-width: 30px;
+  max-width: 60px;
   margin-right: 10px;
 }
 
 .ymca-date__year input {
-  max-width: 60px;
+  max-width: 100px;
 }
 
 .ymca-radios__item {
@@ -151,4 +172,56 @@ a:focus {
 .ymca-radio__button:focus + .ymca-label--radio:before {
   outline: transparent;
   box-shadow: inset 0px 0px 0px 8px #fff, 0px 0px 0px 6px #9CD0EF;
+}
+
+.ymca-sum {
+  display: block;
+}
+
+.ymca-sum-plus::before {
+  content: '+';
+  position: absolute;
+  margin-left: -20px;
+}
+
+.ymca-sum-minus::before {
+  content: '-';
+  position: absolute;
+  margin-left: -17px;
+}
+
+.ymca-sum-total {
+  display: inline-block;
+  border-top: 1px solid #000000;
+}
+
+.ymca-panel {
+  background-color: #A90B76;
+  height: 260px;
+  text-align: center;
+  width: 100%;
+}
+.ymca-panel h1 {
+  padding-top: 3.3em;
+  font-size: 1.4em;
+  font-weight: normal;
+  color: #ffffff !important;
+}
+.ymca-panel h1:focus {
+  outline: none;
+}
+.ymca-panel__cost-per-week {
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
+.bold {
+  font-weight: bold;
+}
+.ymca-purple {
+  color: #A90B76;
+}
+
+.unhide-with-js {
+  display: none;
 }

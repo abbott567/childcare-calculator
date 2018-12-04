@@ -3,16 +3,31 @@
 
 {% block content %}
   <main>
-    <div>
-      <h1>Calculate your childcare costs</h1>
+    <div id="ymca-form">
+      <h1 id="calculateChildcare" tabindex="-1">Calculate your childcare costs</h1>
+      
+      <noscript>
+        <p>
+          Unfortunately, this page uses Javascript to calculate your childcare 
+          costs.
+        </p>
+        <p>
+          If you can't turn on Javascript, or don't know what this means, 
+          you can call us between 8am and 6pm on <span class="bold ymca-purple">0191 2828137</span>.
+        </p>
+      </noscript>
 
-      <form>
+      <form id="unhide-with-js">
         <div class="ymca-form-group" id="fg-freeChildcare">
           <div class="ymca-radios">
             <fieldset>
               <legend class="ymca-legend">
                 Do you get free childcare?
-                <span class="ymca-hint">You can use GOVUK to <a href="#">check if you get free childcare</a>.</span>
+                <span class="ymca-hint">
+                  <span class="bold">Funding starts the term after your child turns 2 or 3.</span>
+                  <br />
+                  You can use GOVUK to <a href="#">check if you get free childcare</a>.
+                </span>
               </legend>
               
               <div class="ymca-radios__item" data-target="freeChildcare-hidden">
@@ -53,22 +68,22 @@
         <div class="ymca-form-group" id="fg-dob">
           <fieldset class="ymca-date">
             <legend class="ymca-legend">
-              What is your childs date of birth?
+              What is your child's date of birth?
             </legend>
 
             <div class="ymca-date__item ymca-date__day">
               <label class="ymca-label" for="dob-day">Day</label>
-              <input class="ymca-input-field" type="number" name="dob[day]" id="dob-day" />
+              <input class="ymca-input-field" type="number" name="dob[day]" id="dob-day" pattern="\d*" />
             </div>
 
             <div class="ymca-date__item ymca-date__month">
               <label class="ymca-label" for="dob-month">Month</label>
-              <input class="ymca-input-field" type="number" name="dob[month]" id="dob-month" />
+              <input class="ymca-input-field" type="number" name="dob[month]" id="dob-month" pattern="\d*" />
             </div>
 
             <div class="ymca-date__item ymca-date__year">
               <label class="ymca-label" for="dob-year">Year</label>
-              <input class="ymca-input-field" type="number" name="dob[year]" id="dob-year" />
+              <input class="ymca-input-field" type="number" name="dob[year]" id="dob-year" pattern="\d*" />
             </div>
           </fieldset>
         </div>
@@ -81,17 +96,17 @@
 
             <div class="ymca-date__item ymca-date__day">
               <label class="ymca-label" for="start-day">Day</label>
-              <input class="ymca-input-field" type="number" name="start[day]" id="start-day" />
+              <input class="ymca-input-field" type="number" name="start[day]" id="start-day" pattern="\d*" />
             </div>
 
             <div class="ymca-date__item ymca-date__month">
               <label class="ymca-label" for="start-month">Month</label>
-              <input class="ymca-input-field" type="number" name="start[month]" id="start-month" />
+              <input class="ymca-input-field" type="number" name="start[month]" id="start-month" pattern="\d*" />
             </div>
 
             <div class="ymca-date__item ymca-date__year">
               <label class="ymca-label" for="start-year">Year</label>
-              <input class="ymca-input-field" type="number" name="start[year]" id="start-year" />
+              <input class="ymca-input-field" type="number" name="start[year]" id="start-year" pattern="\d*" />
             </div>
           </fieldset>
         </div>
@@ -100,7 +115,7 @@
           <fieldset>
             <legend class="ymca-legend">
               Do you need full-time childcare?
-              <span class="ymca-hint">You can use GOVUK to.</span>
+              <span class="ymca-hint">Full time is 8am to 6pm Monday to Friday.</span>
             </legend>
             
             <div class="ymca-radios__item" data-target="part-time-hidden">
@@ -227,7 +242,8 @@
         </div>
 
         <button class="ymca-button">Continue</button>
-      </div>
+      </form>
     </div>
+    <div id="ymca-results"></div>
   </main>
 {% endblock %}
